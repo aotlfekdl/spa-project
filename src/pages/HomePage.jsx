@@ -1,7 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useUserStore from '../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
+import useBoardStore from '../store/boardStore';
 
 const FullDiv = styled.div`
   padding-top: 100px;
@@ -154,6 +156,8 @@ const HomePage = () => {
   const loginUser = useUserStore((s) => s.loginUser);
   const currentUser = useUserStore((s) => s.currentUser);
   const logoutUser = useUserStore((s) => s.logoutUser);
+  const boards = useBoardStore((s) => s.boards);
+  const getBoards = useBoardStore((s) => s.getBoards);
 
   const [loginData, setLoginData] = useState({ id: '', pwd: '' });
 
@@ -192,12 +196,30 @@ const HomePage = () => {
     getUsers();
   }, [getUsers]);
 
+  useEffect(() => {
+    getBoards();
+  }, [getBoards]);
+  
+
   if (currentUser) {
     return (
       <FullDiv>
         <FirstDiv>
           <BoardDiv>
             <UserTitle>게시판 목록</UserTitle>
+            <ul style={{ paddingLeft: '20px' }}>
+  {boards.length === 0 ? (
+    <li>게시글이 없습니다.</li>
+  ) : (
+    boards.map((board) => (
+      <li key={board.id}>
+        {/* 수정된 부분: 존재하는 필드 사용 */}
+        {board.userId}, {board.id}, {board.title}
+      </li>
+    ))
+  )}
+</ul>
+
           </BoardDiv>
         </FirstDiv>
         <SecondDiv>
@@ -230,6 +252,18 @@ const HomePage = () => {
         <FirstDiv>
           <BoardDiv>
             <UserTitle>게시판 목록</UserTitle>
+            <ul style={{ paddingLeft: '20px' }}>
+  {boards.length === 0 ? (
+    <li>게시글이 없습니다.</li>
+  ) : (
+    boards.map((board) => (
+      <li key={board.id}>
+        {/* 수정된 부분: 존재하는 필드 사용 */}
+        {board.userId}, {board.id}, {board.title}
+      </li>
+    ))
+  )}
+</ul>
           </BoardDiv>
         </FirstDiv>
         <SecondDiv>

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useUserStore from '../store/userStore';
 import {  useState } from 'react';
@@ -187,6 +187,8 @@ const BoardRegistration = () => {
     const { name, value } = e.target;
     setBoards((prev) => ({
       ...prev,
+      userId: currentUser.userId,
+      name: currentUser.name,
       [name]: value,
     }));
   };
@@ -204,12 +206,12 @@ const BoardRegistration = () => {
 
 
   return (
-    <FullDiv>
+    <FullDiv onSubmit={handleSubmit}>
       <FirstDivStyle>
         <FormStyle>
-          <FormFirstDiv onSubmit={handleSubmit}>
+          <FormFirstDiv>
             <p>작성자</p>
-            <input type="hidden" name="userId" onChange={handleChange} value={currentUser.id} />
+            <input type="hidden" name="userId" onChange={handleChange} value={currentUser.userId} />
             <input type="text" name="name" onChange={handleChange} value={currentUser.name} readOnly />
           </FormFirstDiv>
           <FormSecondDiv>
@@ -217,7 +219,7 @@ const BoardRegistration = () => {
               type="text"
               name="title"
               onChange={handleChange}
-              value={boards.id}
+              value={boards.title}
               placeholder="제목을 입력해주세요."
             />
           </FormSecondDiv>
