@@ -8,6 +8,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './pages/Header';
 import BoardRegistration from './pages/BoardRegistration';
 
+import { ToastContainer } from 'react-toastify';
+
 
 function App() {
   return (
@@ -16,7 +18,9 @@ function App() {
   
       <Router>
       <Header/>
+      <ToastContainer />
         <Routes>
+
           <Route path='/board/:id' element={<BoardRegistration/>}/>
           <Route path="/" element={<HomePage />} />
           <Route path="/users" element={<UserList />} />

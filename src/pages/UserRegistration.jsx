@@ -4,6 +4,7 @@
   import * as yup from 'yup';
   import { useForm } from 'react-hook-form';
   import { yupResolver } from '@hookform/resolvers/yup';
+import { performToast } from '../utils/performToast';
 
 
 
@@ -131,7 +132,8 @@ border: 1px solid black;
       };
       try {
         await addUser(formattedData);
-        alert('회원가입 성공!');
+        performToast({ msg: '회원가입 성공!', type: 'success' });
+      
         navigate('/');
       } catch (err) {
         console.error(err);
@@ -167,7 +169,7 @@ border: 1px solid black;
             <select {...register('isOnline')}>
             <option value="">상태를 선택하세요</option>
             <option value="true">온라인</option>
-            <option value="false">오프라인인</option>
+            <option value="false">오프라인</option>
             </select>
         
             <ButtonDivStyle>

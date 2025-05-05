@@ -5,6 +5,7 @@ import {  useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import useBoardStore from '../store/boardStore';
 // import * as yup from 'yup';
+import { performToast } from '../utils/performToast';
 
 const FullDiv = styled.form`
   width: 100vw;
@@ -99,6 +100,11 @@ const PDiv = styled.div`
   width: 100%;
   height: 60px;
   border: 1px solid black;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  gap: 30px;
 `;
 const PStyle = styled.p`
   font-size: bold;
@@ -177,6 +183,7 @@ const BoardRegistration = () => {
     name: '',
     title: '',
     context: '',
+    imgUrl: '',
   });
 
   const currentUser = useUserStore((s) => s.currentUser);
@@ -197,6 +204,9 @@ const BoardRegistration = () => {
     e.preventDefault();
     try{
         await addBoard(boards);
+        performToast({ msg: '게시글 등록 성공!', type: 'success' });
+      
+     
         alert(`게시 성공`);
     }catch(err){
         console.error(err);
@@ -225,6 +235,7 @@ const BoardRegistration = () => {
           </FormSecondDiv>
           <PDiv>
             <PStyle>내용</PStyle>
+            <input type="text" name="imgUrl" onChange={handleChange} value={boards.imgUrl} placeholder='이미지URL입력해주세요요'/>
           </PDiv>
           <FormThreeDiv>
             <TextareaAutosize
