@@ -91,6 +91,7 @@ const UserRegistration = () => {
     email: '',
     phone: '',
     imgUrl: '',
+    isOnline: '',
   });
 
   const addUser = useUserStore((state) => state.addUser); 
@@ -137,6 +138,11 @@ const UserRegistration = () => {
           <input name="phone" value={users.phone} onChange={handleChange} placeholder="전화번호를 입력하세요" />
           
           <input name="imgUrl" value={users.imgUrl} onChange={handleChange} placeholder="이미지 주소를 입력하세요" />
+          <select name='isOnline' value={users.isOnline} onChange={handleChange}>
+          <option value="">상태를 선택하세요</option>
+          <option value="true">온라인</option>
+          <option value="false">오프라인인</option>
+          </select>
           <ButtonDivStyle>
             <SButtonStyle type="submit">회원가입</SButtonStyle>
             <button type="reset" onClick={() => setUsers({ id: '', name: '', pwd: '', email: '', phone: '' })}>

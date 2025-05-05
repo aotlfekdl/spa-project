@@ -37,6 +37,15 @@
       "email": "1112@v.com",
       "phone": "112",
       "imgUrl": "112"
+    },
+    {
+      "id": "ehddlf",
+      "name": "동일",
+      "pwd": "ehddlf",
+      "email": "ehddlf@naver.com",
+      "phone": "01010101010",
+      "imgUrl": "노원 보통약국",
+      "isOnline": "true"
     }
   ],
   "boards": [
