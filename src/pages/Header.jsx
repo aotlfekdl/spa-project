@@ -7,7 +7,7 @@ import useUserStore from '../store/userStore';
 
 const HeaderDiv = styled.div`
   width: 100%;
-  height: 70px;
+  height: 50px;
   position: fixed;
   top: 0;
   left: 0;

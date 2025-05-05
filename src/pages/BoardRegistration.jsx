@@ -19,7 +19,7 @@ const FullDiv = styled.form`
 
 const FirstDivStyle = styled.div`
   width: 100%;
-  padding-top: 20px;
+
   display: flex;
   justify-content: center;
   align-items: center;

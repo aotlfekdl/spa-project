@@ -99,6 +99,7 @@ function UserDetail() {
     email: '',
     phone: '',
     imgUrl: '',
+    isOnline: '',
   });
 
   useEffect(() => {
@@ -113,6 +114,7 @@ function UserDetail() {
         email: user.email || '',
         phone: user.phone || '',
         imgUrl: user.imgUrl || '',
+        isOnline: user.isOnline || '',
       });
     }
   }, [user]);
@@ -138,13 +140,16 @@ function UserDetail() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev,
+      [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // send updated data to store (and backend)
-    const payload = { ...user, ...formData };
+    const payload = { ...user, 
+      isOnline: e.isOnline === "true" ? true : false,
+      ...formData };
     // if pwd is empty, don't include it
     if (!payload.pwd) delete payload.pwd;
     await updateUser(user.id, payload);
@@ -168,6 +173,11 @@ function UserDetail() {
             <input name="email" value={formData.email} onChange={handleChange} />
             <input name="phone" value={formData.phone} onChange={handleChange} />
             <input name="imgUrl" value={formData.imgUrl} onChange={handleChange} />
+            <select name="isOnline" value={formData.isOnline} onChange={handleChange}>
+            
+            <option value="true">온라인</option>
+            <option value="false">오프라인</option>
+            </select>
             <ButtonDivStyle>
               <SButtonStyle type="submit">수정하기</SButtonStyle>
               <button onClick={() => navigate('/')}>뒤로가기</button>

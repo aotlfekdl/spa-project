@@ -288,12 +288,15 @@ const HomePage = () => {
             </button>
           </FormStyle>
           <UserListDiv>
-            <UserTitle>회원목록</UserTitle>
+            <UserTitle>온라인 회원목록</UserTitle>
 
             <ul style={{ paddingLeft: '20px' }}>
-              {users.map((user) => (
+              {users.filter(user => user.isOnline).map((user) => (
+                
                 <li key={user.id}>
                   {user.name} ({user.nickName}) - 나이: {user.age}
+                  
+              
                 </li>
               ))}
             </ul>
