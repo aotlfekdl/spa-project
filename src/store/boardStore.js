@@ -32,7 +32,18 @@
       }catch(error) {
         set({ loading:false, error: error.message});
       }
-    }
+    },
+    updateBoard: async (id, updatedData) => {
+      try {
+        const res = await axios.put(`http://localhost:3001/boards/${id}`, updatedData);
+        const updatedBoard = res.data;
+        set((state) => ({
+          boards: state.boards.map((b) => (b.id === Number(id) ? updatedBoard : b)),
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+    },
   }));
 
   export default useBoardStore;

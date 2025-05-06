@@ -5,6 +5,7 @@ import useUserStore from '../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
+import BoardDetail from './BoardDetail';
 const FullDiv = styled.div`
   padding-top: 100px;
   width: 100vw;
@@ -180,7 +181,11 @@ const StyledListItem = styled.li`
     
 
     
-
+p{
+  width: 150px;
+  margin: 0;
+  text-align: center;
+}
 
   height: auto;
   max-height: 150px;
@@ -191,11 +196,32 @@ const StyledListItem = styled.li`
   
   img {
 
+    height: 100px;
+    width: 100px;
 
  
 
 }
 `;
+
+const UserTag = styled.div`
+background: white;
+  width: 100%;
+  height: 30px;
+  align-content: center;
+  font-size: large;
+  font-weight: bold;
+  position: sticky;
+  z-index: 2; 
+  top: 50px;
+  display: flex;
+  justify-content: space-around;
+  
+  p{
+    margin: 0%;
+    text-align: center;
+  }
+`
 
 const StyledListUserItem = styled.li`
   padding: 8px 12px;
@@ -276,14 +302,20 @@ const HomePage = () => {
         <FirstDiv>
           <BoardDiv>
             <UserTitle>게시판 목록</UserTitle>
+            <UserTag>
+              <p>작성자</p>
+        <p>제목</p>
+        <p>이미지</p>
+            </UserTag>
             <StyledList style={{ paddingLeft: '20px' }}>
   {boards.length === 0 ? (
     <StyledListItem>게시글이 없습니다.</StyledListItem>
   ) : (
     boards.map((board) => (
-      <StyledListItem key={board.id}>
-    
-        {board.name}, {board.title}, {board.imgUrl}
+      <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
+        <p>{board.name}</p>
+         <p>{board.title}</p>
+        <img src={board.imgUrl} alt="" />
       </StyledListItem>
     ))
   )}
@@ -321,15 +353,21 @@ const HomePage = () => {
         <FirstDiv>
           <BoardDiv>
             <UserTitle>게시판 목록</UserTitle>
+            <UserTag>
+              <p>작성자</p>
+        <p>제목</p>
+        <p>이미지</p>
+            </UserTag>
             <StyledList style={{ paddingLeft: '20px' }}>
   {boards.length === 0 ? (
     <StyledListItem>게시글이 없습니다.</StyledListItem>
   ) : (
     boards.map((board) => (
-      <StyledListItem key={board.id}>
+      <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
         {/* 수정된 부분: 존재하는 필드 사용 */}
-        {board.name}, {board.title}
-         <img src={board.imgUrl} alt="" />
+        <p>{board.name}</p>
+         <p>{board.title}</p>
+        <img src={board.imgUrl} alt="" />
       </StyledListItem>
     ))
   )}

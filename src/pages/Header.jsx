@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Navigate, useNavigate } from 'react-router-dom';
 import { PiTreeEvergreenDuotone } from "react-icons/pi"
 import useUserStore from '../store/userStore';
+import { FaHome } from "react-icons/fa";
 
 
 const HeaderDiv = styled.div`
@@ -27,10 +28,20 @@ const HeaderDiv = styled.div`
     p{
         font-weight: bold;
         font-size: x-large;
+        margin: 0;
+        display:flex;
+        align-items: center;
+    }
+
+    svg{
+      display: flex;
+      align-items: center;
     }
 
   }
 `
+
+
 const Header = () => {
     const navigate = useNavigate();
     const currentUser = useUserStore((s) => s.currentUser);
@@ -39,11 +50,11 @@ const Header = () => {
     <HeaderDiv>
         <div>//아이콘 들어갈 자리</div>
         <div>
-            <PiTreeEvergreenDuotone />
+        <p><FaHome style={{ fontSize: '24px'}}  onClick={() => navigate('/')}/></p>
             <p onClick={() => navigate('/')}>HOME</p>
             </div>
         <div>
-            <p onClick={() => navigate(`/board/${currentUser.id}`)}>게시판 작성하기</p>
+            <p onClick={() => navigate(`/boardregister/${currentUser.id}`)}>게시판 작성하기</p>
         </div>
         
     </HeaderDiv>

@@ -7,6 +7,7 @@ import NotFound from './pages/NotFound';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './pages/Header';
 import BoardRegistration from './pages/BoardRegistration';
+import BoardDetail from './pages/BoardDetail';
 
 import { ToastContainer } from 'react-toastify';
 
@@ -20,8 +21,8 @@ function App() {
       <Header/>
       <ToastContainer />
         <Routes>
-
-          <Route path='/board/:id' element={<BoardRegistration/>}/>
+          <Route path='/board/:id' element={<BoardDetail/>}/>
+          <Route path='/boardregister/:id' element={<BoardRegistration/>}/>
           <Route path="/" element={<HomePage />} />
           <Route path="/users" element={<UserList />} />
           <Route path="/users/:id" element={<UserDetail />} />
