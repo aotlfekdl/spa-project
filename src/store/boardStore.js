@@ -27,21 +27,23 @@
 
       try{
         const response = await axios.get('http://localhost:3001/boards');
-        console.log(response);
+ 
       set({ boards: response.data, loading: false});
       }catch(error) {
         set({ loading:false, error: error.message});
       }
     },
     updateBoard: async (id, updatedData) => {
+      set({loading: true, error: null});
       try {
         const res = await axios.put(`http://localhost:3001/boards/${id}`, updatedData);
         const updatedBoard = res.data;
         set((state) => ({
           boards: state.boards.map((b) => (b.id === Number(id) ? updatedBoard : b)),
-        }));
-      } catch (err) {
-        console.error(err);
+        }))
+     
+      } catch (error) {
+        set({ loading:false, error: error.message});
       }
     },
   }));

@@ -1,12 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import useUserStore from '../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
 import BoardDetail from './BoardDetail';
 import { RingLoader } from "react-spinners";
+import { darkTheme, lightTheme } from '../utils/themes';
+import styled, { ThemeProvider } from 'styled-components';
+
 const FullDiv = styled.div`
   padding-top: 75px;
   width: 100vw;
@@ -79,10 +81,37 @@ const UserListDiv = styled.div`
     0px 8px 16px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   background: white;
+  overflow-y: auto;
 `;
 
+const BoardTitle = styled.div`
+   background-color: #77d177;
+   width: 100%;
+  height: 50px;
+  align-content: center;
+  font-size: large;
+  font-weight: bold;
+  position: sticky;
+  z-index: 1; 
+  top: 0;
+  border-top-right-radius:8px;
+  border-top-left-radius: 8px;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  button{
+    width: 100px;
+    height: 40px;
+    font-size: 13px;
+    padding: 0;
+  }
+`
+
 const UserTitle = styled.div`
-  background-color: #77d177;
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
+  /* background-color: #77d177; */
   width: 100%;
   height: 50px;
   align-content: center;
@@ -93,12 +122,16 @@ const UserTitle = styled.div`
   top: 0;
   border-top-right-radius:8px;
   border-top-left-radius: 8px;
-  
-  /* button{
-    width: 40px;
-    height: 20px;
-    font-size: small;
-  } */
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  button{
+    width: 100px;
+    height: 40px;
+    font-size: 13px;
+    padding: 0;
+  }
 `;
 
 const BoardDiv = styled.div`
@@ -268,6 +301,9 @@ const HomePage = () => {
     setLoginData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const [isDark, setIsDark] = useState(false);
+  const toggleTheme = () => setIsDark(!isDark);
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
@@ -287,6 +323,8 @@ const HomePage = () => {
       navigate('/');
     }
   };
+
+  
 
   const handleLogout = async () =>{
     
@@ -313,7 +351,7 @@ const HomePage = () => {
       <FullDiv>
         <FirstDiv>
           <BoardDiv>
-            <UserTitle>게시판 목록</UserTitle>
+            <BoardTitle>게시판 목록</BoardTitle>
             <UserTag>
               <p>작성자</p>
         <p>제목</p>
@@ -346,15 +384,25 @@ const HomePage = () => {
             </div>
           </LoginDiv>
           <UserListDiv>
-          <UserTitle>온라인 회원목록
-              <button>온라인/오프라인</button>
+          <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+            <UserTitle>
+            <p>온라인 회원목록</p>
+              <button onClick={toggleTheme}>온라인/오프라인</button>
             </UserTitle>
+            </ThemeProvider>
             <StyledList style={{ paddingLeft: '20px' }}>
-            {users.filter(user => user.isOnline).map((user) => (
+            {isDark ?
+            users.filter(user => user.isOnline).map((user) => (
                 <StyledListUserItem key={user.id}>
-                  {user.name} ({user.nickName}) - 나이: {user.age}
+                   {user.name}- 나이: {user.isOnline}
                 </StyledListUserItem>
-              ))}
+              )):
+              users.filter(user => !user.isOnline).map((user) => (
+                <StyledListUserItem key={user.id}>
+                   {user.name}- 나이: {user.isOnline}
+                </StyledListUserItem>
+              ))
+              }
             </StyledList>
           </UserListDiv>
         </SecondDiv>
@@ -365,7 +413,7 @@ const HomePage = () => {
       <FullDiv>
         <FirstDiv>
           <BoardDiv>
-            <UserTitle>게시판 목록</UserTitle>
+            <BoardTitle>게시판 목록</BoardTitle>
             <UserTag>
               <p>작성자</p>
         <p>제목</p>
@@ -409,15 +457,25 @@ const HomePage = () => {
             </button>
           </FormStyle>
           <UserListDiv>
-            <UserTitle>온라인 회원목록
-              <button>온라인/오프라인</button>
+          <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+            <UserTitle>
+            <p>온라인 회원목록</p>
+              <button onClick={toggleTheme}>온라인/오프라인</button>
             </UserTitle>
+            </ThemeProvider>
             <StyledList style={{ paddingLeft: '20px' }}>
-            {users.filter(user => user.isOnline).map((user) => (
+            {isDark ?
+            users.filter(user => user.isOnline).map((user) => (
                 <StyledListUserItem key={user.id}>
-                  {user.name} ({user.nickName}) - 나이: {user.age}
+                   {user.name}-  {user.isOnline}
                 </StyledListUserItem>
-              ))}
+              )):
+              users.filter(user => !user.isOnline).map((user) => (
+                <StyledListUserItem key={user.id}>
+                  {user.name}- {user.isOnline}
+                </StyledListUserItem>
+              ))
+              }
             </StyledList>
           </UserListDiv>
         </SecondDiv>

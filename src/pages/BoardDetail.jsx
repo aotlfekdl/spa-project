@@ -6,6 +6,7 @@ import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
 import { useParams, useNavigate } from 'react-router-dom';
 import useUserStore from '../store/userStore';
+import { RingLoader } from "react-spinners";
 
 const FullDiv = styled.form`
   width: 100vw;
@@ -181,12 +182,13 @@ const BoardDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const currentUser =  useUserStore((s) => s.currentUser);
-    console.log("이게뭘까",{currentUser});
+    
     const allBoards = useBoardStore((s) => s.boards);
     const getBoards = useBoardStore((s) => s.getBoards);
-    const updateBoard = useBoardStore((s) => s.updateBoard);
+   
 
-  
+    const {updateBoard,loading } = useBoardStore();
+    // const loading = useBoardStore((state) => state.loading);
     const board = allBoards.find((b) => String(b.id) === id);
   
     const [formData, setFormData] = useState({
@@ -221,9 +223,7 @@ const BoardDetail = () => {
       }));
     };
 
-    // console.log("이게뭐지지",{currentUser});
-    // console.log("currentUser.id",currentUser.id) 
-    console.log("board는 뭐지?", board.userid)
+
     const onPass = !!currentUser && currentUser.id === board?.userId;
 
     
@@ -237,7 +237,12 @@ const BoardDetail = () => {
       try {
         await updateBoard(id, formData);
         performToast({ msg: '게시글 수정 완료!', type: 'success' });
-        navigate('/');
+         
+        // alert(`수정 성공`);
+        setTimeout(() => {
+          // useBoardStore.getState().setLoading(false);
+          navigate('/');
+        }, 2000);
       } catch (err) {
         console.error(err);
         performToast({ msg: '수정 실패', type: 'error' });
@@ -246,7 +251,22 @@ const BoardDetail = () => {
   
     return (
       <FullDiv onSubmit={handleSubmit}>
-        
+ {loading && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999
+        }}>
+          <RingLoader color="#8cc3fc" />
+        </div>
+      )}
         <FirstDivStyle>
           <FormStyle>
   
