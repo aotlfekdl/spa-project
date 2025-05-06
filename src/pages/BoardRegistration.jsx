@@ -1,4 +1,4 @@
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useUserStore from '../store/userStore';
 import {  useState } from 'react';
@@ -6,6 +6,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import useBoardStore from '../store/boardStore';
 // import * as yup from 'yup';
 import { performToast } from '../utils/performToast';
+import { RingLoader } from "react-spinners";
 
 const FullDiv = styled.form`
   width: 100vw;
@@ -188,17 +189,18 @@ const BoardRegistration = () => {
 
   const currentUser = useUserStore((s) => s.currentUser);
 
-  const addBoard = useBoardStore((state) => state.addBoard);
+  const { addBoard, loading } = useBoardStore();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBoards((prev) => ({
       ...prev,
-      userId: currentUser.userId,
+      userId: currentUser.id,
       name: currentUser.name,
       [name]: value,
     }));
   };
+ const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -208,20 +210,39 @@ const BoardRegistration = () => {
       
      
         alert(`게시 성공`);
+        navigate('/');
     }catch(err){
         console.error(err);
         alert('등록 실패');
+        navigate('/');
     }
   }
 
 
   return (
     <FullDiv onSubmit={handleSubmit}>
+       {loading && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999
+        }}>
+          <RingLoader color="#8cc3fc" />
+        </div>
+      )}
       <FirstDivStyle>
         <FormStyle>
           <FormFirstDiv>
             <p>작성자</p>
-            <input type="hidden" name="userId" onChange={handleChange} value={currentUser.userId} />
+
+            <input type="hidden" name="userid" onChange={handleChange} value={currentUser.id} />
             <input type="text" name="name" onChange={handleChange} value={currentUser.name} readOnly />
           </FormFirstDiv>
           <FormSecondDiv>

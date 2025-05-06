@@ -180,12 +180,12 @@ const BottomHeader = styled.div`
 const BoardDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-  
+    const currentUser =  useUserStore((s) => s.currentUser);
+    console.log("이게뭘까",{currentUser});
     const allBoards = useBoardStore((s) => s.boards);
     const getBoards = useBoardStore((s) => s.getBoards);
     const updateBoard = useBoardStore((s) => s.updateBoard);
 
-    const currentUser = useUserStore((s) => s.currentUser);
   
     const board = allBoards.find((b) => String(b.id) === id);
   
@@ -220,6 +220,17 @@ const BoardDetail = () => {
         [name]: value,
       }));
     };
+
+    // console.log("이게뭐지지",{currentUser});
+    // console.log("currentUser.id",currentUser.id) 
+    console.log("board는 뭐지?", board.userid)
+    const onPass = !!currentUser && currentUser.id === board?.userId;
+
+    
+  
+
+
+
   
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -248,8 +259,8 @@ const BoardDetail = () => {
                 type="text"
                 name="title"
                 value={formData.title}
-                onChange={board.userId === currentUser?.id ? handleChange : undefined}
-                readOnly={board.userId !== currentUser?.id}
+                onChange={onPass ? handleChange : undefined}
+                readOnly={!onPass}
          
                 placeholder="제목을 입력해주세요."
               />
@@ -260,8 +271,8 @@ const BoardDetail = () => {
                 type="text"
                 name="imgUrl"
                 value={formData.imgUrl}
-                onChange={board.userId === currentUser?.id ? handleChange : undefined}
-                readOnly={board.userId !== currentUser?.id}
+                onChange={onPass ? handleChange : undefined}
+                readOnly={!onPass}
                 placeholder="이미지 URL을 입력해주세요"
               />
             </PDiv>
@@ -269,8 +280,9 @@ const BoardDetail = () => {
               <TextareaAutosize
                 name="context"
                 value={formData.context}
-                onChange={board.userId === currentUser?.id ? handleChange : undefined}
-                readOnly={board.userId !== currentUser?.id}
+                onChange={onPass ? handleChange : undefined}
+    
+                readOnly={!onPass}
                 minRows={5}
                 placeholder="내용을 입력해주세요."
               />
@@ -278,7 +290,7 @@ const BoardDetail = () => {
           </FormStyle>
         </FirstDivStyle>
         <BottomHeader>
-            {board.userId === currentUser?.id ? 
+            {onPass ? 
           <button type="submit">수정 완료</button> :
           <button type="button" onClick={() => navigate('/')}>뒤로가기</button>}
         </BottomHeader>

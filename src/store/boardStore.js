@@ -1,6 +1,6 @@
   import axios from 'axios';
   import { create } from 'zustand';
-
+  
   const useBoardStore = create((set) => ({
     boards: [],
     loading: false,
@@ -9,7 +9,7 @@
     addBoard: async (newBoard) => {
       set({ loading: true, error: null });
 
-
+      
       console.log(newBoard)
       try {
         const result = await axios.post('http://localhost:3001/boards', newBoard);

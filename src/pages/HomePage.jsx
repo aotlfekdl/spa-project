@@ -6,8 +6,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
 import BoardDetail from './BoardDetail';
+import { RingLoader } from "react-spinners";
 const FullDiv = styled.div`
-  padding-top: 100px;
+  padding-top: 75px;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -90,6 +91,14 @@ const UserTitle = styled.div`
   position: sticky;
   z-index: 1; 
   top: 0;
+  border-top-right-radius:8px;
+  border-top-left-radius: 8px;
+  
+  /* button{
+    width: 40px;
+    height: 20px;
+    font-size: small;
+  } */
 `;
 
 const BoardDiv = styled.div`
@@ -100,6 +109,7 @@ const BoardDiv = styled.div`
   margin: 0 auto;
   margin-left: 10%;
   overflow-y: auto;
+  border-radius: 8px;
 `;
 
 const LoginDiv = styled.div`
@@ -246,9 +256,9 @@ const HomePage = () => {
   const loginUser = useUserStore((s) => s.loginUser);
   const currentUser = useUserStore((s) => s.currentUser);
   const logoutUser = useUserStore((s) => s.logoutUser);
-  const boards = useBoardStore((s) => s.boards);
-  const getBoards = useBoardStore((s) => s.getBoards);
-
+  // const boards = useBoardStore((s) => s.boards);
+  // const getBoards = useBoardStore((s) => s.getBoards);
+  const { boards, loading, getBoards } = useBoardStore();
   const [loginData, setLoginData] = useState({ id: '', pwd: '' });
 
 
@@ -294,7 +304,9 @@ const HomePage = () => {
   useEffect(() => {
     getBoards();
   }, [getBoards]);
-  
+  if (loading) {
+    return <RingLoader color="#8cc3fc" />;
+  }
 
   if (currentUser) {
     return (
@@ -334,8 +346,9 @@ const HomePage = () => {
             </div>
           </LoginDiv>
           <UserListDiv>
-            <UserTitle>온라인 회원목록</UserTitle>
-
+          <UserTitle>온라인 회원목록
+              <button>온라인/오프라인</button>
+            </UserTitle>
             <StyledList style={{ paddingLeft: '20px' }}>
             {users.filter(user => user.isOnline).map((user) => (
                 <StyledListUserItem key={user.id}>
@@ -396,7 +409,9 @@ const HomePage = () => {
             </button>
           </FormStyle>
           <UserListDiv>
-            <UserTitle>온라인 회원목록</UserTitle>
+            <UserTitle>온라인 회원목록
+              <button>온라인/오프라인</button>
+            </UserTitle>
             <StyledList style={{ paddingLeft: '20px' }}>
             {users.filter(user => user.isOnline).map((user) => (
                 <StyledListUserItem key={user.id}>

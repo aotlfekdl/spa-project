@@ -48,7 +48,7 @@ const Header = () => {
     
   return (
     <HeaderDiv>
-        <div>//아이콘 들어갈 자리</div>
+        <div></div>
         <div>
         <p><FaHome style={{ fontSize: '24px'}}  onClick={() => navigate('/')}/></p>
             <p onClick={() => navigate('/')}>HOME</p>
