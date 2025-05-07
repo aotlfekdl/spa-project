@@ -11,18 +11,15 @@ import BoardDetail from './pages/BoardDetail';
 
 import { ToastContainer } from 'react-toastify';
 
-
 function App() {
   return (
-    
     <>
-  
       <Router>
-      <Header/>
-      <ToastContainer />
+        <Header />
+        <ToastContainer />
         <Routes>
-          <Route path='/board/:id' element={<BoardDetail/>}/>
-          <Route path='/boardregister/:id' element={<BoardRegistration/>}/>
+          <Route path="/board/:id" element={<BoardDetail />} />
+          <Route path="/boardregister/:id" element={<BoardRegistration />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/users" element={<UserList />} />
           <Route path="/users/:id" element={<UserDetail />} />

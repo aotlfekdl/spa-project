@@ -14,7 +14,6 @@ const useUserStore = create((set) => ({
     try {
       const response = await axios.get('http://localhost:3001/users');
 
-
       set({ users: response.data, loading: false });
     } catch (error) {
       set({ loading: false, error: error.message });
@@ -35,29 +34,27 @@ const useUserStore = create((set) => ({
   loginUser: async (id, pwd) => {
     set({ loading: true, error: null });
     try {
-   
       const response = await axios.get(`http://localhost:3001/users?id=${id}&pwd=${pwd}`);
-      
-    const user = response.data[0];
-    if (!user) {
-      set({ loading: false });
-      return { success: false };
+
+      const user = response.data[0];
+      if (!user) {
+        set({ loading: false });
+        return { success: false };
+      }
+
+      // 비밀번호 비교
+      if (user.pwd !== pwd) {
+        set({ loading: false });
+        return { success: false };
+      }
+
+      set({ loading: false, currentUser: user });
+      return { success: true, user };
+    } catch (err) {
+      set({ error: err.message, loading: false });
     }
+  },
 
-    // 비밀번호 비교
-    if (user.pwd !== pwd) {
-      set({ loading: false });
-      return { success: false };
-    }
-
-    set({ loading: false, currentUser: user });
-    return { success: true, user };
-  } catch (err) {
-    set({ error: err.message, loading: false });
-  }
-},
-
-     
   logoutUser: async (currentUser) => {
     set({ currentUser: null });
 
@@ -67,12 +64,10 @@ const useUserStore = create((set) => ({
   updateUser: async (id, updateData) => {
     try {
       set({ loading: true, error: null });
-      
 
       const response = await axios.put(`http://localhost:3001/users/${id}`, updateData);
-     
+
       const updateUser = response.data;
-   
 
       set((state) => ({
         users: state.users.map((u) => (u.id === id ? updateUser : u)),

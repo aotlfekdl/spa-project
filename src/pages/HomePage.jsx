@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import useUserStore from '../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
-import BoardDetail from './BoardDetail';
-import { RingLoader } from "react-spinners";
+
+import { RingLoader } from 'react-spinners';
 import { darkTheme, lightTheme } from '../utils/themes';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -17,7 +16,6 @@ const FullDiv = styled.div`
   background: fixed;
   background: #f0f2f5;
   box-sizing: border-box;
-
 `;
 
 const FirstDiv = styled.div`
@@ -69,7 +67,7 @@ const FormStyle = styled.form`
 
 const UserListDiv = styled.div`
   width: 350px;
-  height: 300px;
+  height: 54%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -85,48 +83,48 @@ const UserListDiv = styled.div`
 `;
 
 const BoardTitle = styled.div`
-   background-color: #77d177;
-   width: 100%;
-  height: 50px;
-  align-content: center;
-  font-size: large;
-  font-weight: bold;
-  position: sticky;
-  z-index: 1; 
-  top: 0;
-  border-top-right-radius:8px;
-  border-top-left-radius: 8px;
-  gap: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  button{
-    width: 100px;
-    height: 40px;
-    font-size: 13px;
-    padding: 0;
-  }
-`
-
-const UserTitle = styled.div`
-  background-color: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.text};
-  /* background-color: #77d177; */
+  background-color: #77d177;
   width: 100%;
   height: 50px;
   align-content: center;
   font-size: large;
   font-weight: bold;
   position: sticky;
-  z-index: 1; 
+  z-index: 1;
   top: 0;
-  border-top-right-radius:8px;
+  border-top-right-radius: 8px;
   border-top-left-radius: 8px;
   gap: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  button{
+  button {
+    width: 100px;
+    height: 40px;
+    font-size: 13px;
+    padding: 0;
+  }
+`;
+
+const UserTitle = styled.div`
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
+
+  width: 100%;
+  height: 50px;
+  align-content: center;
+  font-size: large;
+  font-weight: bold;
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  button {
     width: 100px;
     height: 40px;
     font-size: 13px;
@@ -136,7 +134,7 @@ const UserTitle = styled.div`
 
 const BoardDiv = styled.div`
   width: 95%;
-  height: 600px;
+  height: 90%;
   background: white;
   border: 1px solid gray;
   margin: 0 auto;
@@ -168,11 +166,11 @@ const LoginDiv = styled.div`
     border: 1px solid #adadad;
     padding-left: 15px;
   }
-  p{
+  p {
     font-size: medium;
     font-weight: bold;
-    
-    margin: 0%;;
+
+    margin: 0%;
   }
 
   button {
@@ -193,7 +191,7 @@ const LoginDiv = styled.div`
     object-fit: cover;
   }
 
-  div{
+  div {
     display: flex;
     gap: 15px;
   }
@@ -219,16 +217,14 @@ const StyledListItem = styled.li`
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  
-    font-weight: 800;
-    
 
-    
-p{
-  width: 150px;
-  margin: 0;
-  text-align: center;
-}
+  font-weight: 800;
+
+  p {
+    width: 150px;
+    margin: 0;
+    text-align: center;
+  }
 
   height: auto;
   max-height: 150px;
@@ -236,35 +232,30 @@ p{
     background-color: #e0f4e0;
   }
 
-  
   img {
-
     height: 100px;
     width: 100px;
-
- 
-
-}
+  }
 `;
 
 const UserTag = styled.div`
-background: white;
+  background: white;
   width: 100%;
   height: 30px;
   align-content: center;
   font-size: large;
   font-weight: bold;
   position: sticky;
-  z-index: 2; 
+  z-index: 2;
   top: 50px;
   display: flex;
   justify-content: space-around;
-  
-  p{
+
+  p {
     margin: 0%;
     text-align: center;
   }
-`
+`;
 
 const StyledListUserItem = styled.li`
   padding: 8px 12px;
@@ -275,13 +266,12 @@ const StyledListUserItem = styled.li`
   font-size: 14px;
   color: #333;
   transition: background-color 0.2s ease;
-  
+
   height: auto;
   max-height: 150px;
   &:hover {
     background-color: #e0f4e0;
   }
-
 `;
 const HomePage = () => {
   const users = useUserStore((s) => s.users);
@@ -289,11 +279,8 @@ const HomePage = () => {
   const loginUser = useUserStore((s) => s.loginUser);
   const currentUser = useUserStore((s) => s.currentUser);
   const logoutUser = useUserStore((s) => s.logoutUser);
-  // const boards = useBoardStore((s) => s.boards);
-  // const getBoards = useBoardStore((s) => s.getBoards);
   const { boards, loading, getBoards } = useBoardStore();
   const [loginData, setLoginData] = useState({ id: '', pwd: '' });
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -310,28 +297,22 @@ const HomePage = () => {
     try {
       const { success, user } = await loginUser(loginData.id, loginData.pwd);
       if (success) {
-        
         performToast({ msg: `로그인인 성공! ${user.name}님 환영합니다!`, type: 'success' });
-    
-      }else {
+      } else {
         performToast({ msg: '아이디 또는 비밀번호가 일치하지 않습니다.', type: 'error' });
       }
       navigate('/');
     } catch {
       alert('로그인중 오류가 발생했습니다.');
-     
+
       navigate('/');
     }
   };
 
-  
-
-  const handleLogout = async () =>{
-    
-    
+  const handleLogout = async () => {
     await logoutUser();
-    navigate('/')
-  }
+    navigate('/');
+  };
 
   const navigate = useNavigate();
 
@@ -354,55 +335,57 @@ const HomePage = () => {
             <BoardTitle>게시판 목록</BoardTitle>
             <UserTag>
               <p>작성자</p>
-        <p>제목</p>
-        <p>이미지</p>
+              <p>제목</p>
+              <p>이미지</p>
             </UserTag>
             <StyledList style={{ paddingLeft: '20px' }}>
-  {boards.length === 0 ? (
-    <StyledListItem>게시글이 없습니다.</StyledListItem>
-  ) : (
-    boards.map((board) => (
-      <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
-        <p>{board.name}</p>
-         <p>{board.title}</p>
-        <img src={board.imgUrl} alt="" />
-      </StyledListItem>
-    ))
-  )}
-</StyledList>
-
+              {boards.length === 0 ? (
+                <StyledListItem>게시글이 없습니다.</StyledListItem>
+              ) : (
+                boards.map((board) => (
+                  <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
+                    <p>{board.name}</p>
+                    <p>{board.title}</p>
+                    <img src={board.imgUrl} alt="" />
+                  </StyledListItem>
+                ))
+              )}
+            </StyledList>
           </BoardDiv>
         </FirstDiv>
         <SecondDiv>
           <LoginDiv>
             <img src={currentUser.imgUrl} alt="" />
-            <p>{currentUser.name}님</p> 
+            <p>{currentUser.name}님</p>
             <p>{currentUser.email}</p>
             <div>
-            <button onClick={() => navigate(`/users/${currentUser.id}`)}>마이페이지</button>
-            <button onClick={handleLogout}>로그아웃</button>
+              <button onClick={() => navigate(`/users/${currentUser.id}`)}>마이페이지</button>
+              <button onClick={handleLogout}>로그아웃</button>
             </div>
           </LoginDiv>
           <UserListDiv>
-          <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-            <UserTitle>
-            <p>온라인 회원목록</p>
-              <button onClick={toggleTheme}>온라인/오프라인</button>
-            </UserTitle>
+            <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+              <UserTitle>
+                <p>온라인 회원목록</p>
+                <button onClick={toggleTheme}>온라인/오프라인</button>
+              </UserTitle>
             </ThemeProvider>
             <StyledList style={{ paddingLeft: '20px' }}>
-            {isDark ?
-            users.filter(user => user.isOnline).map((user) => (
-                <StyledListUserItem key={user.id}>
-                   {user.name}- 나이: {user.isOnline}
-                </StyledListUserItem>
-              )):
-              users.filter(user => !user.isOnline).map((user) => (
-                <StyledListUserItem key={user.id}>
-                   {user.name}- 나이: {user.isOnline}
-                </StyledListUserItem>
-              ))
-              }
+              {isDark
+                ? users
+                    .filter((user) => !user.isOnline)
+                    .map((user) => (
+                      <StyledListUserItem key={user.id}>
+                        {user.name}- 나이: {user.isOnline}
+                      </StyledListUserItem>
+                    ))
+                : users
+                    .filter((user) => user.isOnline)
+                    .map((user) => (
+                      <StyledListUserItem key={user.id}>
+                        {user.name}- 나이: {user.isOnline}
+                      </StyledListUserItem>
+                    ))}
             </StyledList>
           </UserListDiv>
         </SecondDiv>
@@ -416,23 +399,23 @@ const HomePage = () => {
             <BoardTitle>게시판 목록</BoardTitle>
             <UserTag>
               <p>작성자</p>
-        <p>제목</p>
-        <p>이미지</p>
+              <p>제목</p>
+              <p>이미지</p>
             </UserTag>
             <StyledList style={{ paddingLeft: '20px' }}>
-  {boards.length === 0 ? (
-    <StyledListItem>게시글이 없습니다.</StyledListItem>
-  ) : (
-    boards.map((board) => (
-      <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
-        {/* 수정된 부분: 존재하는 필드 사용 */}
-        <p>{board.name}</p>
-         <p>{board.title}</p>
-        <img src={board.imgUrl} alt="" />
-      </StyledListItem>
-    ))
-  )}
-</StyledList>
+              {boards.length === 0 ? (
+                <StyledListItem>게시글이 없습니다.</StyledListItem>
+              ) : (
+                boards.map((board) => (
+                  <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
+                    {/* 수정된 부분: 존재하는 필드 사용 */}
+                    <p>{board.name}</p>
+                    <p>{board.title}</p>
+                    <img src={board.imgUrl} alt="" />
+                  </StyledListItem>
+                ))
+              )}
+            </StyledList>
           </BoardDiv>
         </FirstDiv>
         <SecondDiv>
@@ -445,7 +428,7 @@ const HomePage = () => {
               placeholder="아이디를 입력하세요"
             />
             <input
-              type="text"
+              type="password"
               name="pwd"
               value={loginData.pwd}
               onChange={handleChange}
@@ -457,25 +440,28 @@ const HomePage = () => {
             </button>
           </FormStyle>
           <UserListDiv>
-          <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-            <UserTitle>
-            <p>온라인 회원목록</p>
-              <button onClick={toggleTheme}>온라인/오프라인</button>
-            </UserTitle>
+            <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+              <UserTitle>
+                <p>온라인 회원목록</p>
+                <button onClick={toggleTheme}>온라인/오프라인</button>
+              </UserTitle>
             </ThemeProvider>
             <StyledList style={{ paddingLeft: '20px' }}>
-            {isDark ?
-            users.filter(user => user.isOnline).map((user) => (
-                <StyledListUserItem key={user.id}>
-                   {user.name}-  {user.isOnline}
-                </StyledListUserItem>
-              )):
-              users.filter(user => !user.isOnline).map((user) => (
-                <StyledListUserItem key={user.id}>
-                  {user.name}- {user.isOnline}
-                </StyledListUserItem>
-              ))
-              }
+              {isDark
+                ? users
+                    .filter((user) => !user.isOnline)
+                    .map((user) => (
+                      <StyledListUserItem key={user.id}>
+                        {user.name}- {user.isOnline}
+                      </StyledListUserItem>
+                    ))
+                : users
+                    .filter((user) => user.isOnline)
+                    .map((user) => (
+                      <StyledListUserItem key={user.id}>
+                        {user.name}- {user.isOnline}
+                      </StyledListUserItem>
+                    ))}
             </StyledList>
           </UserListDiv>
         </SecondDiv>

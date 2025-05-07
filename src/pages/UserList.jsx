@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const UserList = () => {
-  return (
-    <div>UserList</div>
-  )
-}
+  return <div>UserList</div>;
+};
 
-export default UserList
+export default UserList;

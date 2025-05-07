@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import {  useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import useBoardStore from '../store/boardStore';
 // import * as yup from 'yup';
 import { performToast } from '../utils/performToast';
 import { useParams, useNavigate } from 'react-router-dom';
 import useUserStore from '../store/userStore';
-import { RingLoader } from "react-spinners";
+import { RingLoader } from 'react-spinners';
 
 const FullDiv = styled.form`
   width: 100vw;
@@ -135,29 +135,6 @@ const FormThreeDiv = styled.div`
   }
 `;
 
-const ImgStyle = styled.img`
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 0 auto;
-  border: 1px solid black;
-`;
-
-const ButtonDivStyle = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-`;
-
-const SButtonStyle = styled.button`
-  background: #74da55;
-`;
-
 const BottomHeader = styled.div`
   width: 100%;
   height: 55px;
@@ -179,143 +156,142 @@ const BottomHeader = styled.div`
 `;
 
 const BoardDetail = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const currentUser =  useUserStore((s) => s.currentUser);
-    
-    const allBoards = useBoardStore((s) => s.boards);
-    const getBoards = useBoardStore((s) => s.getBoards);
-   
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const currentUser = useUserStore((s) => s.currentUser);
 
-    const {updateBoard,loading } = useBoardStore();
-    // const loading = useBoardStore((state) => state.loading);
-    const board = allBoards.find((b) => String(b.id) === id);
-  
-    const [formData, setFormData] = useState({
-      userId: '',
-      name: '',
-      title: '',
-      context: '',
-      imgUrl: '',
-    });
-  
-    useEffect(() => {
-      getBoards();
-    }, [getBoards]);
-  
-    useEffect(() => {
-      if (board) {
-        setFormData({
-          userId: board.userId,
-          name: board.name,
-          title: board.title || '',
-          context: board.context || '',
-          imgUrl: board.imgUrl || '',
-        });
-      }
-    }, [board]);
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    };
+  const allBoards = useBoardStore((s) => s.boards);
+  const getBoards = useBoardStore((s) => s.getBoards);
 
+  const { updateBoard, loading } = useBoardStore();
 
-    const onPass = !!currentUser && currentUser.id === board?.userId;
+  const board = allBoards.find((b) => String(b.id) === id);
 
-    
-  
+  const [formData, setFormData] = useState({
+    userId: '',
+    name: '',
+    title: '',
+    context: '',
+    imgUrl: '',
+  });
 
+  useEffect(() => {
+    getBoards();
+  }, [getBoards]);
 
+  useEffect(() => {
+    if (board) {
+      setFormData({
+        userId: board.userId,
+        name: board.name,
+        title: board.title || '',
+        context: board.context || '',
+        imgUrl: board.imgUrl || '',
+      });
+    }
+  }, [board]);
 
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        await updateBoard(id, formData);
-        performToast({ msg: '게시글 수정 완료!', type: 'success' });
-         
-        // alert(`수정 성공`);
-        setTimeout(() => {
-          // useBoardStore.getState().setLoading(false);
-          navigate('/');
-        }, 2000);
-      } catch (err) {
-        console.error(err);
-        performToast({ msg: '수정 실패', type: 'error' });
-      }
-    };
-  
-    return (
-      <FullDiv onSubmit={handleSubmit}>
- {loading && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999
-        }}>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const onPass = !!currentUser && currentUser.id === board?.userId;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateBoard(id, formData);
+      performToast({ msg: '게시글 수정 완료!', type: 'success' });
+
+      setTimeout(() => {
+
+        navigate('/');
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      performToast({ msg: '수정 실패', type: 'error' });
+    }
+  };
+
+  return (
+    <FullDiv onSubmit={handleSubmit}>
+      {loading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+          }}
+        >
           <RingLoader color="#8cc3fc" />
         </div>
       )}
-        <FirstDivStyle>
-          <FormStyle>
-  
-            <FormFirstDiv>
-              <p>작성자</p>
-              <input type="text" name="name" value={formData.name} readOnly />
-            </FormFirstDiv>
-            <FormSecondDiv>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={onPass ? handleChange : undefined}
-                readOnly={!onPass}
-         
-                placeholder="제목을 입력해주세요."
-              />
-            </FormSecondDiv>
-            <PDiv>
-              <PStyle>내용</PStyle>
-              <input
-                type="text"
-                name="imgUrl"
-                value={formData.imgUrl}
-                onChange={onPass ? handleChange : undefined}
-                readOnly={!onPass}
-                placeholder="이미지 URL을 입력해주세요"
-              />
-            </PDiv>
-            <FormThreeDiv>
-              <TextareaAutosize
-                name="context"
-                value={formData.context}
-                onChange={onPass ? handleChange : undefined}
-    
-                readOnly={!onPass}
-                minRows={5}
-                placeholder="내용을 입력해주세요."
-              />
-            </FormThreeDiv>
-          </FormStyle>
-        </FirstDivStyle>
-        <BottomHeader>
-            {onPass ? 
-          <button type="submit">수정 완료</button> :
-          <button type="button" onClick={() => navigate('/')}>뒤로가기</button>}
-        </BottomHeader>
-      </FullDiv>
-    );
-  };
-  
-  export default BoardDetail;
+      <FirstDivStyle>
+        <FormStyle>
+          <FormFirstDiv>
+            <p>작성자</p>
+            <input type="text" name="name" value={formData.name} readOnly />
+          </FormFirstDiv>
+          <FormSecondDiv>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={onPass ? handleChange : undefined}
+              readOnly={!onPass}
+              placeholder="제목을 입력해주세요."
+            />
+          </FormSecondDiv>
+          <PDiv>
+            <PStyle>내용</PStyle>
+            <input
+              type="text"
+              name="imgUrl"
+              value={formData.imgUrl}
+              onChange={onPass ? handleChange : undefined}
+              readOnly={!onPass}
+              placeholder="이미지 URL을 입력해주세요"
+            />
+          </PDiv>
+          <FormThreeDiv>
+            <TextareaAutosize
+              name="context"
+              value={formData.context}
+              onChange={onPass ? handleChange : undefined}
+              readOnly={!onPass}
+              minRows={5}
+              placeholder="내용을 입력해주세요."
+            />
+          </FormThreeDiv>
+        </FormStyle>
+      </FirstDivStyle>
+      <BottomHeader>
+        {onPass ? (
+          <>
+            <button type="submit">수정 완료</button>
+            <button type="button" onClick={() => navigate('/')}>
+              뒤로가기
+            </button>
+          </>
+        ) : (
+          <button type="button" onClick={() => navigate('/')}>
+            뒤로가기
+          </button>
+        )}
+      </BottomHeader>
+    </FullDiv>
+  );
+};
+
+export default BoardDetail;

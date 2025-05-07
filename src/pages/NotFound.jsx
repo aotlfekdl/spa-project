@@ -11,7 +11,7 @@ const Container = styled.div`
   background-color: white;
   border-radius: 8px;
   padding: 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const Title = styled.h1`
@@ -53,4 +53,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound; 
+export default NotFound;

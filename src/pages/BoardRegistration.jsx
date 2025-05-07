@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useUserStore from '../store/userStore';
-import {  useState } from 'react';
+import { useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import useBoardStore from '../store/boardStore';
-// import * as yup from 'yup';
+
 import { performToast } from '../utils/performToast';
-import { RingLoader } from "react-spinners";
+import { RingLoader } from 'react-spinners';
 
 const FullDiv = styled.form`
   width: 100vw;
@@ -135,28 +135,6 @@ const FormThreeDiv = styled.div`
   }
 `;
 
-const ImgStyle = styled.img`
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  margin: 0 auto;
-  border: 1px solid black;
-`;
-
-const ButtonDivStyle = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-`;
-
-const SButtonStyle = styled.button`
-  background: #74da55;
-`;
 
 const BottomHeader = styled.div`
   width: 100%;
@@ -200,40 +178,40 @@ const BoardRegistration = () => {
       [name]: value,
     }));
   };
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-        await addBoard(boards);
-        performToast({ msg: '게시글 등록 성공!', type: 'success' });
-      
-     
-        alert(`게시 성공`);
-        navigate('/');
-    }catch(err){
-        console.error(err);
-        alert('등록 실패');
-        navigate('/');
-    }
-  }
+    try {
+      await addBoard(boards);
+      performToast({ msg: '게시글 등록 성공!', type: 'success' });
 
+      alert(`게시 성공`);
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      alert('등록 실패');
+      navigate('/');
+    }
+  };
 
   return (
     <FullDiv onSubmit={handleSubmit}>
-       {loading && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999
-        }}>
+      {loading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+          }}
+        >
           <RingLoader color="#8cc3fc" />
         </div>
       )}
@@ -256,7 +234,13 @@ const BoardRegistration = () => {
           </FormSecondDiv>
           <PDiv>
             <PStyle>내용</PStyle>
-            <input type="text" name="imgUrl" onChange={handleChange} value={boards.imgUrl} placeholder='이미지URL입력해주세요요'/>
+            <input
+              type="text"
+              name="imgUrl"
+              onChange={handleChange}
+              value={boards.imgUrl}
+              placeholder="이미지URL입력해주세요요"
+            />
           </PDiv>
           <FormThreeDiv>
             <TextareaAutosize
@@ -278,6 +262,9 @@ const BoardRegistration = () => {
         </FormStyle>
       </FirstDivStyle>
       <BottomHeader>
+        <button type="button" onClick={() => navigate('/')}>
+          뒤로가기
+        </button>
         <button type="submit">등록하기</button>
       </BottomHeader>
     </FullDiv>
