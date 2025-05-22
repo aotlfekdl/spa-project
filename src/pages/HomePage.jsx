@@ -3,6 +3,7 @@ import useUserStore from '../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
+import { FaSearch } from "react-icons/fa";
 
 import { RingLoader } from 'react-spinners';
 import { darkTheme, lightTheme } from '../utils/themes';
@@ -238,6 +239,40 @@ const StyledListItem = styled.li`
   }
 `;
 
+const SearchForm = styled.form`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-left: 10%;
+
+`
+
+const SearchInput = styled.input`
+  height: 30px;
+  width: 50%;
+  border: 1px solid #77d177;
+  margin-bottom: 20px;
+  border-radius: 8px;
+ 
+
+  &:hover {
+    border: 1px solid #77d177;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SearchButton = styled.button`
+height: 30px;
+width: 30px;
+border: none;
+background: none;
+outline: none;
+
+`;
+
 const UserTag = styled.div`
   background: white;
   width: 100%;
@@ -266,6 +301,9 @@ const StyledListUserItem = styled.li`
   font-size: 14px;
   color: #333;
   transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   height: auto;
   max-height: 150px;
@@ -280,7 +318,7 @@ const HomePage = () => {
   const currentUser = useUserStore((s) => s.currentUser);
   const logoutUser = useUserStore((s) => s.logoutUser);
   const { boards, loading, getBoards } = useBoardStore();
-  const [loginData, setLoginData] = useState({ id: '', pwd: '' });
+  const [loginData, setLoginData] = useState({ user_id: '', user_pwd: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -295,9 +333,11 @@ const HomePage = () => {
     e.preventDefault();
 
     try {
-      const { success, user } = await loginUser(loginData.id, loginData.pwd);
+      const { success, user } = await loginUser(loginData.user_id, loginData.user_pwd);
+      console.log(loginData);
+      console.log(loginData.user_id);
       if (success) {
-        performToast({ msg: `로그인인 성공! ${user.name}님 환영합니다!`, type: 'success' });
+        performToast({ msg: `로그인 성공! ${user.name}님 환영합니다!`, type: 'success' });
       } else {
         performToast({ msg: '아이디 또는 비밀번호가 일치하지 않습니다.', type: 'error' });
       }
@@ -331,6 +371,11 @@ const HomePage = () => {
     return (
       <FullDiv>
         <FirstDiv>
+          <SearchForm action="">
+            <SearchInput type="text" />
+            <SearchButton type="submit"><FaSearch /></SearchButton>
+          </SearchForm>
+
           <BoardDiv>
             <BoardTitle>게시판 목록</BoardTitle>
             <UserTag>
@@ -356,7 +401,7 @@ const HomePage = () => {
         <SecondDiv>
           <LoginDiv>
             <img src={currentUser.imgUrl} alt="" />
-            <p>{currentUser.name}님</p>
+            <p>{currentUser.user_id}님</p>
             <p>{currentUser.email}</p>
             <div>
               <button onClick={() => navigate(`/users/${currentUser.id}`)}>마이페이지</button>
@@ -376,14 +421,14 @@ const HomePage = () => {
                     .filter((user) => !user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.id}>
-                        {user.name}- 나이: {user.isOnline}
+                        {user.name}- <p>오프라인</p>
                       </StyledListUserItem>
                     ))
                 : users
                     .filter((user) => user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.id}>
-                        {user.name}- 나이: {user.isOnline}
+                        {user.name}- <p>온라인</p>
                       </StyledListUserItem>
                     ))}
             </StyledList>
@@ -395,6 +440,11 @@ const HomePage = () => {
     return (
       <FullDiv>
         <FirstDiv>
+          <SearchForm action="">
+            <SearchInput type="text" />
+            
+            <SearchButton><FaSearch /></SearchButton>
+          </SearchForm>
           <BoardDiv>
             <BoardTitle>게시판 목록</BoardTitle>
             <UserTag>
@@ -422,15 +472,15 @@ const HomePage = () => {
           <FormStyle onSubmit={handleLoginSubmit}>
             <input
               type="text"
-              name="id"
-              value={loginData.id}
+              name="user_id"
+              value={loginData.user_id}
               onChange={handleChange}
               placeholder="아이디를 입력하세요"
             />
             <input
               type="password"
-              name="pwd"
-              value={loginData.pwd}
+              name="user_pwd"
+              value={loginData.user_pwd}
               onChange={handleChange}
               placeholder="비밀번호를 입력하세요"
             />
@@ -452,14 +502,14 @@ const HomePage = () => {
                     .filter((user) => !user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.id}>
-                        {user.name}- {user.isOnline}
+                        {user.name}- <p>오프라인</p>
                       </StyledListUserItem>
                     ))
                 : users
                     .filter((user) => user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.id}>
-                        {user.name}- {user.isOnline}
+                        {user.name}- <p>온라인</p>
                       </StyledListUserItem>
                     ))}
             </StyledList>

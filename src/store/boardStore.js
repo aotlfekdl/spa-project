@@ -11,7 +11,7 @@ const useBoardStore = create((set) => ({
 
     console.log(newBoard);
     try {
-      const result = await axios.post('http://localhost:3001/boards', newBoard);
+      const result = await axios.post('http://localhost:8888/api/boards', newBoard);
 
       console.log('newBoard', newBoard);
       set((state) => ({ boards: [...state.boards, result.data], loading: false }));
@@ -24,9 +24,12 @@ const useBoardStore = create((set) => ({
     set({ loading: true, error: null });
 
     try {
-      const response = await axios.get('http://localhost:3001/boards');
+      const response = await axios.get('http://localhost:8888/api/boards');
+      const data = response.data;
 
-      set({ boards: response.data, loading: false });
+      console.log('boards 응답:', data);
+
+      set({ boards: Array.isArray(data) ? data : [], loading: false });
     } catch (error) {
       set({ loading: false, error: error.message });
     }
@@ -34,7 +37,7 @@ const useBoardStore = create((set) => ({
   updateBoard: async (id, updatedData) => {
     set({ loading: true, error: null });
     try {
-      const res = await axios.put(`http://localhost:3001/boards/${id}`, updatedData);
+      const res = await axios.put(`http://localhost:8888/api/boards/${id}`, updatedData);
       const updatedBoard = res.data;
       set((state) => ({
         boards: state.boards.map((b) => (b.id === Number(id) ? updatedBoard : b)),

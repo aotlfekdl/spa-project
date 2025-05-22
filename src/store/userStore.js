@@ -12,7 +12,7 @@ const useUserStore = create((set) => ({
     set({ loading: true, error: null });
 
     try {
-      const response = await axios.get('http://localhost:3001/users');
+      const response = await axios.get('http://localhost:8888/api/members');
 
       set({ users: response.data, loading: false });
     } catch (error) {
@@ -23,7 +23,7 @@ const useUserStore = create((set) => ({
   addUser: async (newUser) => {
     set({ loading: true, error: null });
     try {
-      const result = await axios.post('http://localhost:3001/users', newUser);
+      const result = await axios.post('http://localhost:8888/api/members', newUser);
 
       set((state) => ({ users: [...state.users, result.data], loading: false }));
     } catch (err) {
@@ -31,29 +31,28 @@ const useUserStore = create((set) => ({
     }
   },
 
-  loginUser: async (id, pwd) => {
-    set({ loading: true, error: null });
-    try {
-      const response = await axios.get(`http://localhost:3001/users?id=${id}&pwd=${pwd}`);
+loginUser: async (id, pwd) => {
+  set({ loading: true, error: null });
+  try {
+    const response = await axios.post("http://localhost:8888/api/members/login", {
+      user_id: id,
+      user_pwd: pwd,
+    });
 
-      const user = response.data[0];
-      if (!user) {
-        set({ loading: false });
-        return { success: false };
-      }
+    const user = response.data;
 
-      // 비밀번호 비교
-      if (user.pwd !== pwd) {
-        set({ loading: false });
-        return { success: false };
-      }
-
-      set({ loading: false, currentUser: user });
-      return { success: true, user };
-    } catch (err) {
-      set({ error: err.message, loading: false });
+    if (!user) {
+      set({ loading: false });
+      return { success: false };
     }
-  },
+
+    set({ loading: false, currentUser: user });
+    return { success: true, user };
+  } catch (err) {
+    set({ error: err.message, loading: false });
+    return { success: false, error: err.message };
+  }
+},
 
   logoutUser: async (currentUser) => {
     set({ currentUser: null });
@@ -65,7 +64,7 @@ const useUserStore = create((set) => ({
     try {
       set({ loading: true, error: null });
 
-      const response = await axios.put(`http://localhost:3001/users/${id}`, updateData);
+      const response = await axios.put(`http://localhost:8888/api/Members/${id}`, updateData);
 
       const updateUser = response.data;
 

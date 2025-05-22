@@ -91,9 +91,9 @@ const SButtonStyle = styled.button`
 `;
 
 const schema = yup.object().shape({
-  id: yup.string().required('아이디는 필수입니다.'),
-  name: yup.string().required('이름은 필수입니다.'),
-  pwd: yup.string().required('비밀번호는 필수입니다.'),
+  user_id: yup.string().required('아이디는 필수입니다.'),
+  user_name: yup.string().required('이름은 필수입니다.'),
+  user_pwd: yup.string().required('비밀번호는 필수입니다.'),
   email: yup.string().email('유효하지 않은 이메일입니다.').required('이메일은 필수입니다.'),
   phone: yup.string().required('전화번호는 필수입니다.'),
 });
@@ -114,8 +114,15 @@ const UserRegistration = () => {
   });
 
   const onSubmit = async (data) => {
+    console.log("폼 제출 데이터:", data);
     const formattedData = {
-      ...data,
+      user_id: data.user_id,
+      user_pwd: data.user_pwd,
+      user_name: data.user_name,
+      email: data.email,
+      phone: data.phone,
+      gender: 'M', // enum이면 값 주의
+      isDeleted: 'N', //
       isOnline: data.isOnline === 'true',
     };
     try {
@@ -136,14 +143,14 @@ const UserRegistration = () => {
       <FirstDivStyle>
         <FormStyle onSubmit={handleSubmit(onSubmit)}>
           <ImgWrapper>
-            <ImgStyle src={imgUrl || 'https://via.placeholder.com/150'} />
+            <ImgStyle src={imgUrl || 'https://placehold.co/150x150'} />
           </ImgWrapper>
-          <input placeholder="아이디를 입력하세요" {...register('id')} />
-          <p>{errors.id?.message}</p>
-          <input placeholder="이름을 입력하세요" {...register('name')} />
-          <p>{errors.name?.message}</p>
-          <input placeholder="비밀번호를 입력하세요" {...register('pwd')} />
-          <p>{errors.pwd?.message}</p>
+          <input placeholder="아이디를 입력하세요" {...register('user_id')} />
+          <p>{errors.user_id?.message}</p>
+          <input placeholder="이름을 입력하세요" {...register('user_name')} />
+          <p>{errors.user_name?.message}</p>
+          <input placeholder="비밀번호를 입력하세요" {...register('user_pwd')} />
+          <p>{errors.user_pwd?.message}</p>
           <input placeholder="이메일 입력하세요" {...register('email')} />
           <p>{errors.email?.message}</p>
           <input placeholder="전화번호를 입력하세요" {...register('phone')} />
