@@ -135,7 +135,6 @@ const FormThreeDiv = styled.div`
   }
 `;
 
-
 const BottomHeader = styled.div`
   width: 100%;
   height: 55px;
@@ -158,11 +157,11 @@ const BottomHeader = styled.div`
 
 const BoardRegistration = () => {
   const [boards, setBoards] = useState({
+    board_title: '',
+    board_content: '',
     userId: '',
-    name: '',
-    title: '',
-    context: '',
-    imgUrl: '',
+    file: null,
+    tags: [],
   });
 
   const currentUser = useUserStore((s) => s.currentUser);
@@ -173,8 +172,8 @@ const BoardRegistration = () => {
     const { name, value } = e.target;
     setBoards((prev) => ({
       ...prev,
-      userId: currentUser.id,
-      name: currentUser.name,
+      userId: currentUser.userId,
+      name: currentUser.userName,
       [name]: value,
     }));
   };
@@ -183,7 +182,14 @@ const BoardRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addBoard(boards);
+    const formData = new FormData();
+    formData.append('board_title', boards.board_title);
+    formData.append('board_content', boards.board_content);
+    formData.append('user_id', currentUser.userId);
+    formData.append('file', boards.file);
+    formData.append('tags', JSON.stringify(boards.tags));
+
+      await addBoard(formData);
       performToast({ msg: '게시글 등록 성공!', type: 'success' });
 
       alert(`게시 성공`);
@@ -220,32 +226,35 @@ const BoardRegistration = () => {
           <FormFirstDiv>
             <p>작성자</p>
 
-            <input type="hidden" name="userid" onChange={handleChange} value={currentUser.id} />
-            <input type="text" name="name" onChange={handleChange} value={currentUser.name} readOnly />
+            <input type="hidden" name="userId" onChange={handleChange} value={currentUser.userId} />
+            <input type="text" onChange={handleChange} value={currentUser.userName} readOnly />
           </FormFirstDiv>
           <FormSecondDiv>
             <input
               type="text"
-              name="title"
+              name="board_title"
               onChange={handleChange}
-              value={boards.title}
+              value={boards.board_title}
               placeholder="제목을 입력해주세요."
             />
           </FormSecondDiv>
           <PDiv>
             <PStyle>내용</PStyle>
             <input
-              type="text"
-              name="imgUrl"
-              onChange={handleChange}
-              value={boards.imgUrl}
-              placeholder="이미지URL입력해주세요요"
+              type="file"
+              name="file"
+              onChange={(e) => setBoards((prev) => ({...prev, file: e.target.files[0]}))}
+       
+              placeholder="이미지URL입력해주세요"
             />
+
+            <PStyle>태그</PStyle>
+            <input type="text" name="tags" onChange={handleChange} value={boards.tags} placeholder="태그 입력란" />
           </PDiv>
           <FormThreeDiv>
             <TextareaAutosize
-              name="context"
-              value={boards.context}
+              name="board_content"
+              value={boards.board_content}
               onChange={handleChange}
               minRows={5}
               placeholder="내용을 입력해주세요."

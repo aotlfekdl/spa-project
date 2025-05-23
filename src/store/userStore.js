@@ -8,51 +8,61 @@ const useUserStore = create((set) => ({
   loading: false,
   error: null,
 
-  getUsers: async () => {
+  getUsers: async (id) => {
     set({ loading: true, error: null });
 
-    try {
-      const response = await axios.get('http://localhost:8888/api/members');
+    
 
+    try {
+
+      const response = await axios.get(`http://localhost:8888/api/members/${id}`);
+
+       
+      
       set({ users: response.data, loading: false });
     } catch (error) {
       set({ loading: false, error: error.message });
     }
   },
 
-  addUser: async (newUser) => {
+  addUser: async (formData) => {
     set({ loading: true, error: null });
+
     try {
-      const result = await axios.post('http://localhost:8888/api/members', newUser);
+      const result = await axios.post('http://localhost:8888/api/members', formData);
+    
 
       set((state) => ({ users: [...state.users, result.data], loading: false }));
     } catch (err) {
+    
       set({ error: err.message, loading: false });
     }
   },
 
-loginUser: async (id, pwd) => {
-  set({ loading: true, error: null });
-  try {
-    const response = await axios.post("http://localhost:8888/api/members/login", {
-      user_id: id,
-      user_pwd: pwd,
-    });
+  loginUser: async (id, pwd) => {
 
-    const user = response.data;
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.post('http://localhost:8888/api/members/login', {
+        user_id: id,
+        user_pwd: pwd,
+      });
 
-    if (!user) {
-      set({ loading: false });
-      return { success: false };
+
+      const user = response.data;
+
+      if (!user) {
+        set({ loading: false });
+        return { success: false };
+      }
+
+      set({ loading: false, currentUser: user });
+      return { success: true, user };
+    } catch (err) {
+      set({ error: err.message, loading: false });
+      return { success: false, error: err.message };
     }
-
-    set({ loading: false, currentUser: user });
-    return { success: true, user };
-  } catch (err) {
-    set({ error: err.message, loading: false });
-    return { success: false, error: err.message };
-  }
-},
+  },
 
   logoutUser: async (currentUser) => {
     set({ currentUser: null });
@@ -60,20 +70,28 @@ loginUser: async (id, pwd) => {
     return { currentUser };
   },
 
-  updateUser: async (id, updateData) => {
+  updateUser: async (userId, updateData) => {
     try {
       set({ loading: true, error: null });
+   console.log(`여기로 오시나요?3333${userId}`);
+      const response = await axios.put(`http://localhost:8888/api/members/${userId}`, updateData);
 
-      const response = await axios.put(`http://localhost:8888/api/Members/${id}`, updateData);
+      console.log("resporesponsense::", response)
 
-      const updateUser = response.data;
+      const updatedUser = response.data
 
-      set((state) => ({
-        users: state.users.map((u) => (u.id === id ? updateUser : u)),
-        currentUser: state.currentUser?.id === id ? updateUser : state.currentUser,
-      }));
-    } catch (err) {
-      set({ error: err.message, loading: false });
+     set((state) => ({
+      loading: false, // ✅ 로딩 상태 해제 포함
+
+      users: state.users.map((u) =>
+        u.user_id === userId ? updatedUser : u // ✅ 기존 users 배열에서 해당 유저만 교체
+      ),
+
+      currentUser:
+        state.currentUser?.user_id === userId ? updatedUser : state.currentUser, // ✅ id → user_id
+    }));
+  } catch (err) {
+    set({ error: err.message, loading: false });
     }
   },
 }));

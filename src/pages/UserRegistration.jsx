@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { performToast } from '../utils/performToast';
+import { useState } from 'react';
 
 const FullDiv = styled.div`
   width: 100vw;
@@ -113,20 +114,33 @@ const UserRegistration = () => {
     resolver: yupResolver(schema),
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const onSubmit = async (data) => {
-    console.log("폼 제출 데이터:", data);
-    const formattedData = {
-      user_id: data.user_id,
-      user_pwd: data.user_pwd,
-      user_name: data.user_name,
-      email: data.email,
-      phone: data.phone,
-      gender: 'M', // enum이면 값 주의
-      isDeleted: 'N', //
-      isOnline: data.isOnline === 'true',
-    };
+    console.log('폼 제출 데이터:', data);
+    // const formattedData = {
+
+    //   user_id: data.user_id,
+    //   user_pwd: data.user_pwd,
+    //   user_name: data.user_name,
+    //   email: data.email,
+    //   phone: data.phone,
+    //   gender: 'M',
+    //   isDeleted: 'N',
+    //   file: data.file,
+    //   isOnline: data.isOnline === 'true',
+    // };
     try {
-      await addUser(formattedData);
+      const formData = new FormData();
+      formData.append('user_id', data.user_id);
+      formData.append('user_pwd', data.user_pwd);
+      formData.append('user_name', data.user_name);
+      formData.append('email', data.email);
+      formData.append('phone', data.phone);
+      formData.append('isDeleted', 'N');
+      formData.append('file', selectedFile);
+      formData.append('isOnline', data.isOnline);
+      await addUser(formData);
       performToast({ msg: '회원가입 성공!', type: 'success' });
 
       navigate('/');
@@ -136,7 +150,7 @@ const UserRegistration = () => {
     }
   };
 
-  const imgUrl = watch('imgUrl');
+  const imgUrl = watch('C:/dev_tool/member/');
 
   return (
     <FullDiv>
@@ -155,7 +169,12 @@ const UserRegistration = () => {
           <p>{errors.email?.message}</p>
           <input placeholder="전화번호를 입력하세요" {...register('phone')} />
           <p>{errors.phone?.message}</p>
-          <input placeholder="이미지 주소를 입력하세요" {...register('imgUrl')} />
+          <input
+            type="file"
+            onChange={(e) => {
+              setSelectedFile(e.target.files[0]); // 실제 File 객체 저장
+            }}
+          />
           <select {...register('isOnline')}>
             <option value="">상태를 선택하세요</option>
             <option value="true">온라인</option>

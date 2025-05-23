@@ -6,20 +6,21 @@ const useBoardStore = create((set) => ({
   loading: false,
   error: null,
 
-  addBoard: async (newBoard) => {
+  addBoard: async (formData) => {
     set({ loading: true, error: null });
 
-    console.log(newBoard);
+    console.log(formData);
     try {
-      const result = await axios.post('http://localhost:8888/api/boards', newBoard);
+      const result = await axios.post('http://localhost:8888/api/boards', formData);
 
-      console.log('newBoard', newBoard);
+      console.log('newBoard', formData);
       set((state) => ({ boards: [...state.boards, result.data], loading: false }));
     } catch (err) {
       set({ error: err.message, loading: false });
     }
   },
 
+  // 게시글List 가져오기
   getBoards: async () => {
     set({ loading: true, error: null });
 
@@ -29,7 +30,7 @@ const useBoardStore = create((set) => ({
 
       console.log('boards 응답:', data);
 
-      set({ boards: Array.isArray(data) ? data : [], loading: false });
+      set({ boards: data, loading: false });
     } catch (error) {
       set({ loading: false, error: error.message });
     }

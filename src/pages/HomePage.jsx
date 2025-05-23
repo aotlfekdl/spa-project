@@ -3,7 +3,7 @@ import useUserStore from '../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useBoardStore from '../store/boardStore';
 import { performToast } from '../utils/performToast';
-import { FaSearch } from "react-icons/fa";
+import { FaSearch } from 'react-icons/fa';
 
 import { RingLoader } from 'react-spinners';
 import { darkTheme, lightTheme } from '../utils/themes';
@@ -244,8 +244,7 @@ const SearchForm = styled.form`
   flex-direction: row;
   justify-content: center;
   margin-left: 10%;
-
-`
+`;
 
 const SearchInput = styled.input`
   height: 30px;
@@ -253,7 +252,6 @@ const SearchInput = styled.input`
   border: 1px solid #77d177;
   margin-bottom: 20px;
   border-radius: 8px;
- 
 
   &:hover {
     border: 1px solid #77d177;
@@ -265,12 +263,11 @@ const SearchInput = styled.input`
 `;
 
 const SearchButton = styled.button`
-height: 30px;
-width: 30px;
-border: none;
-background: none;
-outline: none;
-
+  height: 30px;
+  width: 30px;
+  border: none;
+  background: none;
+  outline: none;
 `;
 
 const UserTag = styled.div`
@@ -331,13 +328,14 @@ const HomePage = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    console.log("로그인 시도:", loginData); 
 
     try {
       const { success, user } = await loginUser(loginData.user_id, loginData.user_pwd);
       console.log(loginData);
       console.log(loginData.user_id);
       if (success) {
-        performToast({ msg: `로그인 성공! ${user.name}님 환영합니다!`, type: 'success' });
+        performToast({ msg: `로그인 성공! ${user.user_name}님 환영합니다!`, type: 'success' });
       } else {
         performToast({ msg: '아이디 또는 비밀번호가 일치하지 않습니다.', type: 'error' });
       }
@@ -363,8 +361,15 @@ const HomePage = () => {
   useEffect(() => {
     getBoards();
   }, [getBoards]);
+
+
   if (loading) {
     return <RingLoader color="#8cc3fc" />;
+  }
+
+  {
+    console.log("boards",boards);
+    console.log("currentUser",currentUser)
   }
 
   if (currentUser) {
@@ -373,7 +378,9 @@ const HomePage = () => {
         <FirstDiv>
           <SearchForm action="">
             <SearchInput type="text" />
-            <SearchButton type="submit"><FaSearch /></SearchButton>
+            <SearchButton type="submit">
+              <FaSearch />
+            </SearchButton>
           </SearchForm>
 
           <BoardDiv>
@@ -384,14 +391,18 @@ const HomePage = () => {
               <p>이미지</p>
             </UserTag>
             <StyledList style={{ paddingLeft: '20px' }}>
-              {boards.length === 0 ? (
+              {boards.content?.length === 0 ? (
+                
                 <StyledListItem>게시글이 없습니다.</StyledListItem>
+             
               ) : (
-                boards.map((board) => (
-                  <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
-                    <p>{board.name}</p>
-                    <p>{board.title}</p>
-                    <img src={board.imgUrl} alt="" />
+                boards.content?.map((board) => (
+                  
+                  <StyledListItem key={board.board_no}>
+                    {console.log("board",board)}
+                    <p>{board.user_id}</p>
+                    <p>{board.board_title}</p>
+                    <img src={`/images/${board.change_name}`} alt="board img" />
                   </StyledListItem>
                 ))
               )}
@@ -400,11 +411,12 @@ const HomePage = () => {
         </FirstDiv>
         <SecondDiv>
           <LoginDiv>
-            <img src={currentUser.imgUrl} alt="" />
-            <p>{currentUser.user_id}님</p>
+            <img src={`http://localhost:8888/uploadFile/${currentUser.change_name}`} alt="" />
+            
+            <p>{currentUser.user_name}님</p>
             <p>{currentUser.email}</p>
             <div>
-              <button onClick={() => navigate(`/users/${currentUser.id}`)}>마이페이지</button>
+              <button onClick={() => navigate(`/users/${currentUser.user_id}`)}>마이페이지</button>
               <button onClick={handleLogout}>로그아웃</button>
             </div>
           </LoginDiv>
@@ -420,8 +432,9 @@ const HomePage = () => {
                 ? users
                     .filter((user) => !user.isOnline)
                     .map((user) => (
-                      <StyledListUserItem key={user.id}>
-                        {user.name}- <p>오프라인</p>
+                      <StyledListUserItem key={user.user_id}>
+                        {console.log(user)}
+                        {user.user_name}- <p>오프라인</p>
                       </StyledListUserItem>
                     ))
                 : users
@@ -442,8 +455,10 @@ const HomePage = () => {
         <FirstDiv>
           <SearchForm action="">
             <SearchInput type="text" />
-            
-            <SearchButton><FaSearch /></SearchButton>
+
+            <SearchButton>
+              <FaSearch />
+            </SearchButton>
           </SearchForm>
           <BoardDiv>
             <BoardTitle>게시판 목록</BoardTitle>
@@ -453,15 +468,18 @@ const HomePage = () => {
               <p>이미지</p>
             </UserTag>
             <StyledList style={{ paddingLeft: '20px' }}>
-              {boards.length === 0 ? (
+              {boards.content?.length === 0 ? (
+                
                 <StyledListItem>게시글이 없습니다.</StyledListItem>
+             
               ) : (
-                boards.map((board) => (
-                  <StyledListItem key={board.id} onClick={() => navigate(`/board/${board.id}`)}>
-                    {/* 수정된 부분: 존재하는 필드 사용 */}
-                    <p>{board.name}</p>
-                    <p>{board.title}</p>
-                    <img src={board.imgUrl} alt="" />
+                boards.content?.map((board) => (
+                  
+                  <StyledListItem key={board.board_no}>
+               
+                    <p>{board.user_id}</p>
+                    <p>{board.board_title}</p>
+                    {/* <img src={`/images/${board.change_name}`} alt="board img" /> */}
                   </StyledListItem>
                 ))
               )}
@@ -502,14 +520,14 @@ const HomePage = () => {
                     .filter((user) => !user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.id}>
-                        {user.name}- <p>오프라인</p>
+                        {user.user_name}- <p>오프라인</p>
                       </StyledListUserItem>
                     ))
                 : users
                     .filter((user) => user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.id}>
-                        {user.name}- <p>온라인</p>
+                        {user.user_name}- <p>온라인</p>
                       </StyledListUserItem>
                     ))}
             </StyledList>
