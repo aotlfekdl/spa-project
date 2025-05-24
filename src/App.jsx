@@ -18,7 +18,7 @@ function App() {
         <Header />
         <ToastContainer />
         <Routes>
-          <Route path="/board/:id" element={<BoardDetail />} />
+          <Route path="/boards/:id" element={<BoardDetail />} />
           <Route path="/boardregister/:id" element={<BoardRegistration />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/users" element={<UserList />} />

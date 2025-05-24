@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useUserStore from '../store/userStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import useBoardStore from '../store/boardStore';
 
@@ -21,7 +21,6 @@ const FullDiv = styled.form`
 
 const FirstDivStyle = styled.div`
   width: 100%;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,10 +35,8 @@ const FormStyle = styled.div`
   min-height: 600px;
   display: flex;
   flex-direction: column;
-
   border: 1px solid #484d6d;
   align-items: center;
-
   box-shadow:
     0px 2px 4px rgba(0, 0, 0, 0.1),
     0px 8px 16px rgba(0, 0, 0, 0.1);
@@ -57,7 +54,6 @@ const FormStyle = styled.div`
 
   button {
     border: 1px solid black;
-
     &:hover {
       cursor: pointer;
       background: #34c470;
@@ -79,6 +75,7 @@ const FormFirstDiv = styled.div`
     width: auto;
   }
 `;
+
 const FormSecondDiv = styled.div`
   height: 60px;
   width: 100%;
@@ -107,6 +104,7 @@ const PDiv = styled.div`
   padding-left: 30px;
   gap: 30px;
 `;
+
 const PStyle = styled.p`
   font-size: bold;
 `;
@@ -115,7 +113,6 @@ const FormThreeDiv = styled.div`
   min-height: 400px;
   height: auto;
   width: 100%;
-
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -145,7 +142,6 @@ const BottomHeader = styled.div`
   z-index: 100;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
-
   justify-content: end;
   text-align: justify;
 
@@ -156,48 +152,60 @@ const BottomHeader = styled.div`
 `;
 
 const BoardRegistration = () => {
+  const currentUser = useUserStore((s) => s.currentUser);
+  const { addBoard, loading } = useBoardStore();
+  const navigate = useNavigate();
+
   const [boards, setBoards] = useState({
     board_title: '',
     board_content: '',
     userId: '',
+    name: '',
     file: null,
     tags: [],
   });
 
-  const currentUser = useUserStore((s) => s.currentUser);
-
-  const { addBoard, loading } = useBoardStore();
+  useEffect(() => {
+    if (currentUser) {
+      setBoards((prev) => ({
+        ...prev,
+        userId: currentUser.user_id,
+        name: currentUser.user_name,
+      }));
+    }
+  }, [currentUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setBoards((prev) => ({
-      ...prev,
-      userId: currentUser.userId,
-      name: currentUser.userName,
-      [name]: value,
-    }));
+    if (name === 'tags') {
+      setBoards((prev) => ({
+        ...prev,
+        tags: value.split(',').map((tag) => tag.trim()),
+      }));
+    } else {
+      setBoards((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    const formData = new FormData();
-    formData.append('board_title', boards.board_title);
-    formData.append('board_content', boards.board_content);
-    formData.append('user_id', currentUser.userId);
-    formData.append('file', boards.file);
-    formData.append('tags', JSON.stringify(boards.tags));
+      const formData = new FormData();
+      formData.append('board_title', boards.board_title);
+      formData.append('board_content', boards.board_content);
+      formData.append('user_id', boards.userId);
+      if (boards.file) formData.append('file', boards.file);
+      formData.append('tags', JSON.stringify(boards.tags));
 
       await addBoard(formData);
       performToast({ msg: '게시글 등록 성공!', type: 'success' });
-
-      alert(`게시 성공`);
       navigate('/');
     } catch (err) {
       console.error(err);
-      alert('등록 실패');
-      navigate('/');
+      performToast({ msg: '등록 실패', type: 'error' });
     }
   };
 
@@ -225,9 +233,7 @@ const BoardRegistration = () => {
         <FormStyle>
           <FormFirstDiv>
             <p>작성자</p>
-
-            <input type="hidden" name="userId" onChange={handleChange} value={currentUser.userId} />
-            <input type="text" onChange={handleChange} value={currentUser.userName} readOnly />
+            <input type="text" value={boards.name} readOnly />
           </FormFirstDiv>
           <FormSecondDiv>
             <input
@@ -239,17 +245,20 @@ const BoardRegistration = () => {
             />
           </FormSecondDiv>
           <PDiv>
-            <PStyle>내용</PStyle>
+            <PStyle>첨부파일</PStyle>
             <input
               type="file"
               name="file"
-              onChange={(e) => setBoards((prev) => ({...prev, file: e.target.files[0]}))}
-       
-              placeholder="이미지URL입력해주세요"
+              onChange={(e) => setBoards((prev) => ({ ...prev, file: e.target.files[0] }))}
             />
-
             <PStyle>태그</PStyle>
-            <input type="text" name="tags" onChange={handleChange} value={boards.tags} placeholder="태그 입력란" />
+            <input
+              type="text"
+              name="tags"
+              onChange={handleChange}
+              value={boards.tags.join(', ')}
+              placeholder="태그 입력란"
+            />
           </PDiv>
           <FormThreeDiv>
             <TextareaAutosize
@@ -271,9 +280,7 @@ const BoardRegistration = () => {
         </FormStyle>
       </FirstDivStyle>
       <BottomHeader>
-        <button type="button" onClick={() => navigate('/')}>
-          뒤로가기
-        </button>
+        <button type="button" onClick={() => navigate('/')}>뒤로가기</button>
         <button type="submit">등록하기</button>
       </BottomHeader>
     </FullDiv>

@@ -159,34 +159,31 @@ const BoardDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const currentUser = useUserStore((s) => s.currentUser);
+  const board = useBoardStore((s) => s.boardDetail);
+  const [selectedFile, setSelectedFile] = useState(null);
+const deleteBoard = useBoardStore((s) => s.deleteBoard);
 
-  const allBoards = useBoardStore((s) => s.boards);
-  const getBoards = useBoardStore((s) => s.getBoards);
 
+  const getBoardInfo = useBoardStore((s) => s.getBoardInfo);
   const { updateBoard, loading } = useBoardStore();
-
-  const board = allBoards.find((b) => String(b.id) === id);
-
   const [formData, setFormData] = useState({
-    userId: '',
-    name: '',
-    title: '',
-    context: '',
-    imgUrl: '',
+
   });
+ 
+  useEffect(() =>{
+    getBoardInfo(id);
+  }, [getBoardInfo]);
+  
 
-  useEffect(() => {
-    getBoards();
-  }, [getBoards]);
-
+  
   useEffect(() => {
     if (board) {
       setFormData({
-        userId: board.userId,
-        name: board.name,
-        title: board.title || '',
-        context: board.context || '',
-        imgUrl: board.imgUrl || '',
+        user_id: board.user_id,
+        user_name: board.user_name,
+        board_title: board.board_title || '',
+        board_content: board.board_content || '',
+        file: board.origin_name || '',
       });
     }
   }, [board]);
@@ -198,24 +195,48 @@ const BoardDetail = () => {
       [name]: value,
     }));
   };
-
-  const onPass = !!currentUser && currentUser.id === board?.userId;
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await updateBoard(id, formData);
-      performToast({ msg: '게시글 수정 완료!', type: 'success' });
-
-      setTimeout(() => {
-
-        navigate('/');
-      }, 2000);
-    } catch (err) {
-      console.error(err);
-      performToast({ msg: '수정 실패', type: 'error' });
-    }
+  
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    
   };
+
+  const handleDelete = async () => {
+  if (!window.confirm('정말 삭제하시겠습니까?')) return;
+
+  try {
+    await deleteBoard(board.board_no); // 또는 board.id
+    performToast({ msg: '게시글이 삭제되었습니다.', type: 'success' });
+    navigate('/');  
+  } catch (error) {
+    console.log(error);
+    performToast({ msg: '삭제 실패', type: 'error' });
+  }
+};
+  const onPass = !!currentUser && currentUser.user_id === board?.user_id;
+const handleSubmit = async (e) => {
+  e.preventDefault(); // ✅ prevent default behavior
+
+  try {
+    const requestData = new FormData();
+    requestData.append('board_title', formData.board_title);
+    requestData.append('board_content', formData.board_content);
+    if (selectedFile) {
+      requestData.append('file', selectedFile);
+    }
+    console.log("requestData:",requestData);
+    await updateBoard(id, requestData);
+    performToast({ msg: '게시글 수정 완료!', type: 'success' });
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
+  } catch (err) {
+    console.error(err);
+    performToast({ msg: '수정 실패', type: 'error' });
+  }
+};
+
 
   return (
     <FullDiv onSubmit={handleSubmit}>
@@ -241,33 +262,32 @@ const BoardDetail = () => {
         <FormStyle>
           <FormFirstDiv>
             <p>작성자</p>
-            <input type="text" name="name" value={formData.name} readOnly />
+            <input type="text" name="user_name" value={formData.user_name} readOnly />
           </FormFirstDiv>
           <FormSecondDiv>
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="board_title"
+              value={formData.board_title}
               onChange={onPass ? handleChange : undefined}
               readOnly={!onPass}
               placeholder="제목을 입력해주세요."
             />
           </FormSecondDiv>
           <PDiv>
-            <PStyle>내용</PStyle>
+            <PStyle>첨부파일</PStyle>
             <input
-              type="text"
-              name="imgUrl"
-              value={formData.imgUrl}
-              onChange={onPass ? handleChange : undefined}
+              type="file"
+              name="file"
+              onChange={handleFileChange}
               readOnly={!onPass}
               placeholder="이미지 URL을 입력해주세요"
             />
           </PDiv>
           <FormThreeDiv>
             <TextareaAutosize
-              name="context"
-              value={formData.context}
+              name="board_content"
+              value={formData.board_content}
               onChange={onPass ? handleChange : undefined}
               readOnly={!onPass}
               minRows={5}
@@ -279,7 +299,8 @@ const BoardDetail = () => {
       <BottomHeader>
         {onPass ? (
           <>
-            <button type="submit">수정 완료</button>
+             <button type="button" onClick={handleDelete}>삭제하기</button>
+            <button type="submit">수정하기</button>
             <button type="button" onClick={() => navigate('/')}>
               뒤로가기
             </button>

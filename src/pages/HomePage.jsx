@@ -328,12 +328,13 @@ const HomePage = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    console.log("로그인 시도:", loginData); 
+
+    
 
     try {
       const { success, user } = await loginUser(loginData.user_id, loginData.user_pwd);
-      console.log(loginData);
-      console.log(loginData.user_id);
+  
+      
       if (success) {
         performToast({ msg: `로그인 성공! ${user.user_name}님 환영합니다!`, type: 'success' });
       } else {
@@ -366,11 +367,7 @@ const HomePage = () => {
   if (loading) {
     return <RingLoader color="#8cc3fc" />;
   }
-
-  {
-    console.log("boards",boards);
-    console.log("currentUser",currentUser)
-  }
+console.log(boards);
 
   if (currentUser) {
     return (
@@ -397,12 +394,13 @@ const HomePage = () => {
              
               ) : (
                 boards.content?.map((board) => (
-                  
-                  <StyledListItem key={board.board_no}>
-                    {console.log("board",board)}
+                    
+               <StyledListItem key={board.board_no} onClick={() => navigate(`/boards/${board.board_no}`)}>
+                 
+                   
                     <p>{board.user_id}</p>
                     <p>{board.board_title}</p>
-                    <img src={`/images/${board.change_name}`} alt="board img" />
+                    <img src={`http://localhost:8888/uploadFile/${board.change_name}`} alt="board img" />
                   </StyledListItem>
                 ))
               )}
@@ -433,7 +431,8 @@ const HomePage = () => {
                     .filter((user) => !user.isOnline)
                     .map((user) => (
                       <StyledListUserItem key={user.user_id}>
-                        {console.log(user)}
+                    
+                    
                         {user.user_name}- <p>오프라인</p>
                       </StyledListUserItem>
                     ))
@@ -474,12 +473,12 @@ const HomePage = () => {
              
               ) : (
                 boards.content?.map((board) => (
-                  
-                  <StyledListItem key={board.board_no}>
+
+                  <StyledListItem key={board.board_no} onClick={() => navigate(`/boards/${board.board_no}`)}>
                
                     <p>{board.user_id}</p>
                     <p>{board.board_title}</p>
-                    {/* <img src={`/images/${board.change_name}`} alt="board img" /> */}
+                            <img src={`http://localhost:8888/uploadFile/${board.change_name}`} alt="board img" />
                   </StyledListItem>
                 ))
               )}

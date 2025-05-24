@@ -139,7 +139,7 @@ const UserRegistration = () => {
       formData.append('phone', data.phone);
       formData.append('isDeleted', 'N');
       formData.append('file', selectedFile);
-      formData.append('isOnline', data.isOnline);
+      formData.append('status', data.status);
       await addUser(formData);
       performToast({ msg: '회원가입 성공!', type: 'success' });
 
@@ -175,10 +175,10 @@ const UserRegistration = () => {
               setSelectedFile(e.target.files[0]); // 실제 File 객체 저장
             }}
           />
-          <select {...register('isOnline')}>
+          <select {...register('status')}>
             <option value="">상태를 선택하세요</option>
-            <option value="true">온라인</option>
-            <option value="false">오프라인</option>
+            <option value="Y">온라인</option>
+            <option value="N">오프라인</option>
           </select>
 
           <ButtonDivStyle>

@@ -131,9 +131,6 @@ const UserDetail = () => {
     getUsers(currentUser.user_id);
   }, [getUsers]);
 
-  useEffect(() => {
-    console.log('currentUser.status:', currentUser.status);
-  }, [currentUser]);
 
   useEffect(() => {
     if (currentUser) {
@@ -209,6 +206,7 @@ const UserDetail = () => {
             <option value="N">오프라인</option>
           </select>
           <ButtonDivStyle>
+            
             <SButtonStyle type="submit">수정하기</SButtonStyle>
             <button type="button" onClick={() => navigate('/')}>
               뒤로가기

@@ -66,21 +66,16 @@ const useUserStore = create((set) => ({
   updateUser: async (userId, updateData) => {
     try {
       set({ loading: true, error: null });
-      console.log(`여기로 오시나요?3333${userId}`);
+
       const response = await axios.put(`http://localhost:8888/api/members/${userId}`, updateData);
-
-      console.log('resporesponsense::', response);
-
       const updatedUser = response.data;
 
       set((state) => ({
-        loading: false, // ✅ 로딩 상태 해제 포함
-
+        loading: false, 
         users: state.users.map(
-          (u) => (u.user_id === userId ? updatedUser : u) // ✅ 기존 users 배열에서 해당 유저만 교체
+          (u) => (u.user_id === userId ? updatedUser : u)
         ),
-
-        currentUser: state.currentUser?.user_id === userId ? updatedUser : state.currentUser, // ✅ id → user_id
+        currentUser: state.currentUser?.user_id === userId ? updatedUser : state.currentUser, 
       }));
     } catch (err) {
       set({ error: err.message, loading: false });
