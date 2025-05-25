@@ -4,6 +4,7 @@ import { create } from 'zustand';
 const useBoardStore = create((set) => ({
   boards: [],
   boardDetail: null, 
+  searchedBoards: [],
   loading: false,
   error: null,
 
@@ -67,15 +68,34 @@ const useBoardStore = create((set) => ({
 
   deleteBoard: async (id) =>{
     set({ loading: true, error: null});
+    console.log("삭제요청")
 
     try{
-      await axios.delete(`http:localhost:8888/api/boards/${id}`)
+      await axios.delete(`http://localhost:8888/api/boards/${id}`)
 
       set({loading: false});
     }catch(error) {
       set({loading: false, error: error.message})
     }
-  }
+  },
+
+
+  
+  searchBoards: async (keyword) => {
+    set({ loading: true });
+    console.log("searchBoards", keyword)
+    try {
+      const res = await axios.get('http://localhost:8888/api/boards', {
+        params: { keyword },
+      });
+      set({ searchedBoards: res.data.content, loading: false });
+    } catch (err) {
+      console.error('검색 실패:', err);
+      set({ loading: false });
+    }
+  },
+
+
 }));
 
 export default useBoardStore;

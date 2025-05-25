@@ -8,11 +8,11 @@ const useUserStore = create((set) => ({
   loading: false,
   error: null,
 
-  getUsers: async (id) => {
+  getUsers: async () => {
     set({ loading: true, error: null });
 
     try {
-      const response = await axios.get(`http://localhost:8888/api/members/${id}`);
+      const response = await axios.get(`http://localhost:8888/api/members`);
 
       set({
         users: Array.isArray(response.data) ? response.data : [response.data],

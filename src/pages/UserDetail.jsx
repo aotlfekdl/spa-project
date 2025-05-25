@@ -105,7 +105,6 @@ const schema = yup.object().shape({
 const UserDetail = () => {
   const navigate = useNavigate();
 
-  const getUsers = useUserStore((state) => state.getUsers);
   const updateUser = useUserStore((state) => state.updateUser);
   const currentUser = useUserStore((s) => s.currentUser);
 
@@ -123,14 +122,6 @@ const UserDetail = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-
-  {
-    console.log(currentUser.user_id);
-  }
-  useEffect(() => {
-    getUsers(currentUser.user_id);
-  }, [getUsers]);
-
 
   useEffect(() => {
     if (currentUser) {

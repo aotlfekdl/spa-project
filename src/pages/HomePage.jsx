@@ -308,33 +308,42 @@ const StyledListUserItem = styled.li`
     background-color: #e0f4e0;
   }
 `;
+
 const HomePage = () => {
-  const users = useUserStore((s) => s.users);
-  const getUsers = useUserStore((s) => s.getUsers);
-  const loginUser = useUserStore((s) => s.loginUser);
-  const currentUser = useUserStore((s) => s.currentUser);
-  const logoutUser = useUserStore((s) => s.logoutUser);
-  const { boards, loading, getBoards } = useBoardStore();
+  const navigate = useNavigate();
+
+  // ✅ Zustand hooks
+  const {
+    boards,
+    searchedBoards,
+    loading,
+    getBoards,
+    searchBoards,
+    clearSearchResults,
+  } = useBoardStore();
+
+  const {
+    users,
+    getUsers,
+    loginUser,
+    currentUser,
+    logoutUser,
+  } = useUserStore();
+
   const [loginData, setLoginData] = useState({ user_id: '', user_pwd: '' });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setLoginData((prev) => ({ ...prev, [name]: value }));
-  };
-
+  const [searchKeyword, setSearchKeyword] = useState('');
   const [isDark, setIsDark] = useState(false);
   const toggleTheme = () => setIsDark(!isDark);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
-    
-
     try {
       const { success, user } = await loginUser(loginData.user_id, loginData.user_pwd);
-  
-      
       if (success) {
         performToast({ msg: `로그인 성공! ${user.user_name}님 환영합니다!`, type: 'success' });
       } else {
@@ -342,8 +351,7 @@ const HomePage = () => {
       }
       navigate('/');
     } catch {
-      alert('로그인중 오류가 발생했습니다.');
-
+      alert('로그인 중 오류 발생');
       navigate('/');
     }
   };
@@ -353,64 +361,66 @@ const HomePage = () => {
     navigate('/');
   };
 
-  const navigate = useNavigate();
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (searchKeyword.trim() === '') {
+      clearSearchResults();
+    } else {
+      await searchBoards(searchKeyword);
+    }
+  };
 
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
-
-  useEffect(() => {
     getBoards();
-  }, [getBoards]);
+  }, [getUsers, getBoards]);
 
+  const boardList = searchedBoards.length > 0 ? searchedBoards : boards.content || [];
 
-  if (loading) {
-    return <RingLoader color="#8cc3fc" />;
-  }
-console.log(boards);
+  if (loading) return <RingLoader color="#8cc3fc" />;
 
-  if (currentUser) {
-    return (
-      <FullDiv>
-        <FirstDiv>
-          <SearchForm action="">
-            <SearchInput type="text" />
-            <SearchButton type="submit">
-              <FaSearch />
-            </SearchButton>
-          </SearchForm>
+  return (
+    <FullDiv>
+      <FirstDiv>
+        <SearchForm onSubmit={handleSearch}>
+          <SearchInput
+            type="text"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            placeholder="게시글 제목 검색"
+          />
+          <SearchButton>
+            <FaSearch />
+          </SearchButton>
+        </SearchForm>
 
-          <BoardDiv>
-            <BoardTitle>게시판 목록</BoardTitle>
-            <UserTag>
-              <p>작성자</p>
-              <p>제목</p>
-              <p>이미지</p>
-            </UserTag>
-            <StyledList style={{ paddingLeft: '20px' }}>
-              {boards.content?.length === 0 ? (
-                
-                <StyledListItem>게시글이 없습니다.</StyledListItem>
-             
-              ) : (
-                boards.content?.map((board) => (
-                    
-               <StyledListItem key={board.board_no} onClick={() => navigate(`/boards/${board.board_no}`)}>
-                 
-                   
-                    <p>{board.user_id}</p>
-                    <p>{board.board_title}</p>
-                    <img src={`http://localhost:8888/uploadFile/${board.change_name}`} alt="board img" />
-                  </StyledListItem>
-                ))
-              )}
-            </StyledList>
-          </BoardDiv>
-        </FirstDiv>
-        <SecondDiv>
+        <BoardDiv>
+          <BoardTitle>게시판 목록</BoardTitle>
+          <UserTag>
+            <p>작성자</p>
+            <p>제목</p>
+            <p>이미지</p>
+          </UserTag>
+          <StyledList style={{ paddingLeft: '20px' }}>
+            {boardList.length === 0 ? (
+              <StyledListItem>게시글이 없습니다.</StyledListItem>
+            ) : (
+              boardList.map((board) => (
+                <StyledListItem key={board.board_no} onClick={() => navigate(`/boards/${board.board_no}`)}>
+                  <p>{board.user_id}</p>
+                  <p>{board.board_title}</p>
+                  <img src={`http://localhost:8888/uploadFile/${board.change_name}`} alt="board img" />
+                </StyledListItem>
+              ))
+            )}
+          </StyledList>
+        </BoardDiv>
+      </FirstDiv>
+
+      <SecondDiv>
+        {currentUser ? (
           <LoginDiv>
-            <img src={`http://localhost:8888/uploadFile/${currentUser.change_name}`} alt="" />
-            
+            <img src={`http://localhost:8888/uploadFile/${currentUser.change_name}`} alt="user profile" />
             <p>{currentUser.user_name}님</p>
             <p>{currentUser.email}</p>
             <div>
@@ -418,74 +428,7 @@ console.log(boards);
               <button onClick={handleLogout}>로그아웃</button>
             </div>
           </LoginDiv>
-          <UserListDiv>
-            <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-              <UserTitle>
-                <p>온라인 회원목록</p>
-                <button onClick={toggleTheme}>온라인/오프라인</button>
-              </UserTitle>
-            </ThemeProvider>
-            <StyledList style={{ paddingLeft: '20px' }}>
-              {isDark
-                ? users
-                    .filter((user) => !user.isOnline)
-                    .map((user) => (
-                      <StyledListUserItem key={user.user_id}>
-                    
-                    
-                        {user.user_name}- <p>오프라인</p>
-                      </StyledListUserItem>
-                    ))
-                : users
-                    .filter((user) => user.isOnline)
-                    .map((user) => (
-                      <StyledListUserItem key={user.id}>
-                        {user.name}- <p>온라인</p>
-                      </StyledListUserItem>
-                    ))}
-            </StyledList>
-          </UserListDiv>
-        </SecondDiv>
-      </FullDiv>
-    );
-  } else {
-    return (
-      <FullDiv>
-        <FirstDiv>
-          <SearchForm action="">
-            <SearchInput type="text" />
-
-            <SearchButton>
-              <FaSearch />
-            </SearchButton>
-          </SearchForm>
-          <BoardDiv>
-            <BoardTitle>게시판 목록</BoardTitle>
-            <UserTag>
-              <p>작성자</p>
-              <p>제목</p>
-              <p>이미지</p>
-            </UserTag>
-            <StyledList style={{ paddingLeft: '20px' }}>
-              {boards.content?.length === 0 ? (
-                
-                <StyledListItem>게시글이 없습니다.</StyledListItem>
-             
-              ) : (
-                boards.content?.map((board) => (
-
-                  <StyledListItem key={board.board_no} onClick={() => navigate(`/boards/${board.board_no}`)}>
-               
-                    <p>{board.user_id}</p>
-                    <p>{board.board_title}</p>
-                            <img src={`http://localhost:8888/uploadFile/${board.change_name}`} alt="board img" />
-                  </StyledListItem>
-                ))
-              )}
-            </StyledList>
-          </BoardDiv>
-        </FirstDiv>
-        <SecondDiv>
+        ) : (
           <FormStyle onSubmit={handleLoginSubmit}>
             <input
               type="text"
@@ -506,35 +449,36 @@ console.log(boards);
               새 계정 만들기
             </button>
           </FormStyle>
-          <UserListDiv>
-            <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-              <UserTitle>
-                <p>온라인 회원목록</p>
-                <button onClick={toggleTheme}>온라인/오프라인</button>
-              </UserTitle>
-            </ThemeProvider>
-            <StyledList style={{ paddingLeft: '20px' }}>
-              {isDark
-                ? users
-                    .filter((user) => !user.isOnline)
-                    .map((user) => (
-                      <StyledListUserItem key={user.id}>
-                        {user.user_name}- <p>오프라인</p>
-                      </StyledListUserItem>
-                    ))
-                : users
-                    .filter((user) => user.isOnline)
-                    .map((user) => (
-                      <StyledListUserItem key={user.id}>
-                        {user.user_name}- <p>온라인</p>
-                      </StyledListUserItem>
-                    ))}
-            </StyledList>
-          </UserListDiv>
-        </SecondDiv>
-      </FullDiv>
-    );
-  }
+        )}
+
+        <UserListDiv>
+          <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+            <UserTitle>
+              <p>온라인 회원목록</p>
+              <button onClick={toggleTheme}>온라인/오프라인</button>
+            </UserTitle>
+          </ThemeProvider>
+          <StyledList style={{ paddingLeft: '20px' }}>
+            {isDark
+              ? users
+                  .filter((user) => user.status === 'N')
+                  .map((user) => (
+                    <StyledListUserItem key={user.user_id}>
+                      {user.user_name} - <p>오프라인</p>
+                    </StyledListUserItem>
+                  ))
+              : users
+                  .filter((user) => user.status === 'Y')
+                  .map((user) => (
+                    <StyledListUserItem key={user.user_id}>
+                      {user.user_name} - <p>온라인</p>
+                    </StyledListUserItem>
+                  ))}
+          </StyledList>
+        </UserListDiv>
+      </SecondDiv>
+    </FullDiv>
+  );
 };
 
 export default HomePage;

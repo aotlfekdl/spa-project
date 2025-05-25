@@ -206,7 +206,7 @@ const deleteBoard = useBoardStore((s) => s.deleteBoard);
   if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
   try {
-    await deleteBoard(board.board_no); // 또는 board.id
+    await deleteBoard(board.board_no); 
     performToast({ msg: '게시글이 삭제되었습니다.', type: 'success' });
     navigate('/');  
   } catch (error) {
@@ -216,7 +216,7 @@ const deleteBoard = useBoardStore((s) => s.deleteBoard);
 };
   const onPass = !!currentUser && currentUser.user_id === board?.user_id;
 const handleSubmit = async (e) => {
-  e.preventDefault(); // ✅ prevent default behavior
+  e.preventDefault(); 
 
   try {
     const requestData = new FormData();
